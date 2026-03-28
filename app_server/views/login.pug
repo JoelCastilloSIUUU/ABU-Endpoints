@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  .container-fluid.bg-white(style="min-height: 100dvh; padding: 0;")
+    .row.justify-content-center.m-0
+      .col-12.col-md-6.col-lg-4.p-4.text-center
+        
+        .mt-5.mb-4
+          .mx-auto.rounded-circle.d-flex.justify-content-center.align-items-center.mb-3(style="width: 100px; height: 100px; background-color: #FF8C00;")
+            i.bi.bi-person-fill.text-white(style="font-size: 3.5rem;")
+          
+          h1.fw-bold(style="color: #D35400; font-size: 2.2rem;")= title
+          p.text-muted(style="font-size: 1.1rem;")= subtitle
+
+          if error && error.length > 0
+
+        
+        form.text-start.mt-5(action="/login", method="post")
+          .mb-4
+            label.form-label.fw-bold.text-secondary(for='email') Correo electrónico
+            input#email.form-control.form-control-lg(
+              type='email',
+              name='email',
+              placeholder='Escribe tu correo',
+              required,
+              style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 15px;"
+            )
+          
+          .mb-5
+            label.form-label.fw-bold.text-secondary(for='password') Contraseña
+            .input-group
+              input#password.form-control.form-control-lg(
+                type='password',
+                name='password',
+                placeholder='Escribe tu contraseña',
+                required,
+                style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 15px;"
+              )
+        
+          button.btn.btn-lg.w-100.text-white.fw-bold.shadow-sm(
+            type='submit',
+            style="background-color: #FF8C00; border-radius: 1rem; padding: 15px; font-size: 1.2rem;"
+          )= botonPrincipal
+        
+        .mt-auto.pb-4
+          a.d-block.mt-5.text-decoration-none.fw-bold(
+            href="/registro",
+            style="color: #FF4500; font-size: 1rem;"
+          )= registroTexto

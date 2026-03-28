@@ -1,0 +1,50 @@
+
+body {
+  padding: 0;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow-x: hidden; 
+  background-color: #F8F9FA; 
+}
+
+
+.page {
+  min-height: 100vh;
+  transition: opacity 180ms ease, transform 180ms ease;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page.page-exit {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+
+a.tap-active .card {
+  transform: scale(0.98);
+  transition: transform 160ms ease;
+}
+
+
+.locked {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

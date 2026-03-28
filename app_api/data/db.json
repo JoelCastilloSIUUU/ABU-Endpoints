@@ -1,0 +1,15 @@
+{
+  "reviews": {
+    "69c6e334f8410fe686368fc0": [
+      {
+        "id": "26dd3ac0-584e-4328-b164-d16886444838",
+        "userId": "69c6e318f8410fe686368fb9",
+        "userName": "Matias",
+        "rating": 5,
+        "comment": "Me gusta mucho el curso",
+        "createdAt": "2026-03-28T17:54:32.561Z",
+        "updatedAt": "2026-03-28T17:54:32.561Z"
+      }
+    ]
+  }
+}

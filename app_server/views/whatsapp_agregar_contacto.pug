@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  .container-fluid.p-0
+    .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
+      a.text-white.text-decoration-none(href="/whatsapp", data-nav="tap")
+        i.bi.bi-arrow-left.me-2
+        | Volver
+      h2.h4.fw-bold.mt-3.mb-1 Agregar un contacto
+      p.small.m-0 Aprende a añadir un contacto en WhatsApp
+      .small.mt-2 Paso 0 de #{totalPasos}
+
+    .px-3.mt-4.pb-5
+      .card.border-0.shadow-sm.p-3(style="border-radius:20px;")
+        h3.h6.fw-bold.mb-1(style="color:#D35400;") Ejercicios prácticos
+        p.text-muted.small.mb-3 Completa cada paso en orden. Aprenderás sin prisa, con ejemplos claros.
+        a.btn.btn-success.w-100.rounded-pill.py-3.fw-bold(href="/whatsapp/agregar-contacto/paso/1", data-nav="tap")
+          i.bi.bi-play-fill.me-1
+          | Comenzar

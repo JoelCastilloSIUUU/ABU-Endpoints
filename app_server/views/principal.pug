@@ -1,0 +1,117 @@
+extends layout
+
+block content
+  .container-fluid.p-0(style="background-color: #F8F9FA; min-height: 100vh;")
+    .header-naranja.p-4.text-white(style="background: #FF8C00; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;")
+      .d-flex.justify-content-between.align-items-center.mt-2
+        .d-flex.align-items-center
+          .bg-white.rounded-circle.me-3.d-flex.justify-content-center.align-items-center(style="width: 55px; height: 55px;")
+            i.bi.bi-person-fill(style="font-size: 2rem; color: #FF8C00;")
+          div
+            h2.h4.fw-bold.m-0= title
+            p.small.m-0= subtitle
+        .bg-white.rounded-pill.px-3.py-1.shadow-sm
+          i.bi.bi-trophy-fill.me-1(style="color: #FF8C00;")
+          span.fw-bold.text-dark= progeso
+
+    .cuerpo-app.px-3.mt-4
+      if success
+        .alert.alert-success.shadow-sm= success
+      if error
+        .alert.alert-danger.shadow-sm= error
+
+      .search-container.mb-4
+        .input-group.shadow-sm(style="border-radius: 15px; overflow: hidden; border: 2px solid #FF8C00;")
+          span.input-group-text.bg-white.border-0
+            i.bi.bi-search(style="color: #FF8C00;")
+          input.form-control.border-0.py-2(type="text", placeholder="¿Qué quieres aprender hoy?", style="box-shadow: none;")
+
+      .card.border-0.shadow-sm.p-3.mb-4(style="border-radius: 20px; border-left: 8px solid #D35400 !important;")
+        h3.h6.fw-bold.mb-1(style="color: #D35400;")= seccionTitulo
+        p.text-muted.small.m-0= seccionDesc
+
+      .row.g-3.m-0
+        each modulo in modulos
+          .col-12.p-0.mb-3
+            - const href = (modulo.nombre === 'WhatsApp') ? '/whatsapp' : '#'
+            a.text-decoration-none(href=href)
+              .card.border-0.shadow-sm(style="border-radius: 20px;")
+                .p-2.d-flex.align-items-center
+                  .rounded-4.d-flex.justify-content-center.align-items-center.me-3(style=`width: 70px; height: 70px; background-color: ${modulo.color}; min-width: 70px;`)
+                    i.bi(class=modulo.icono, style="font-size: 2rem; color: white;")
+                  .text-start
+                    h4.h6.fw-bold.mb-1.text-dark= modulo.nombre
+                    p.text-muted.extra-small.m-0(style="font-size: 0.75rem;")= modulo.desc
+
+      .mt-5.pb-5
+        h3.h6.fw-bold.mb-3(style="color: #2C3E50;") Administrar mis cursos
+
+        .card.border-0.shadow-sm.mb-4(style="border-radius: 20px; border: 2px dashed #FF8C00; background-color: #FFF5E6;")
+          .p-4.text-center
+            i.bi.bi-plus-circle-fill.mb-2(style="font-size: 2.5rem; color: #FF8C00;")
+            h4.h6.fw-bold.text-dark Crear curso personalizado
+
+            form.mt-3(action="/principal/cursos", method="post")
+              input(type="hidden", name="userId", value=userid)
+              input(type="hidden", name="nombre", value=userNombre)
+              select.form-select.mb-2(name="nombreCurso", required, style="border-radius: 10px;")
+                option(value="") Selecciona un módulo para añadir...
+                option(value="WhatsApp") WhatsApp
+                option(value="YouTube") YouTube
+                option(value="Cámara") Cámara
+                option(value="Navegador") Navegador
+                option(value="Ajustes") Ajustes
+                option(value="Llamadas") Llamadas
+              button.btn.btn-sm.text-white.fw-bold(type="submit", style="background-color: #FF8C00; border-radius: 10px; padding: 8px 20px;") + Añadir a mi lista
+
+        h3.h6.fw-bold.mb-3(style="color: #2C3E50;") Mis Cursos Activos (Gestionar)
+        if !userid
+          .alert.alert-warning Debes iniciar sesión para gestionar tus cursos.
+        else if cursosActivos.length === 0
+          .alert.alert-light.shadow-sm Aún no tienes cursos personalizados. Añade uno para comenzar.
+        else
+          .row.g-2.m-0
+            each item in cursosActivos
+              .col-12.p-0.mb-3
+                .card.border-0.shadow-sm.p-3(style="border-radius: 15px;")
+                  .d-flex.justify-content-between.align-items-center
+                    .d-flex.align-items-center
+                      .rounded.me-3.d-flex.justify-content-center.align-items-center(style=`width: 40px; height: 40px; background-color: ${item.meta.color};`)
+                        i.bi(class=item.meta.icono, style="color: white;")
+                      .me-3
+                        span.fw-bold.text-dark.d-block= item.nombreCurso
+                        small.text-muted Progreso: #{item.progreso || 0}%
+                    form(action=`/principal/cursos/${item.cursoId}/delete`, method="post")
+                      input(type="hidden", name="userId", value=userid)
+                      input(type="hidden", name="nombre", value=userNombre)
+                      button.btn.btn-link.text-danger.p-0(type="submit")
+                        i.bi.bi-trash-fill(style="font-size: 1.2rem;")
+
+                  .mt-3.pt-3(style="border-top: 1px solid #f0f0f0;")
+                    h4.h6.fw-bold.mb-2(style="color:#D35400;") Crear reseña de este curso
+                    form(action=`/principal/cursos/${item.cursoId}/resenas`, method="post")
+                      input(type="hidden", name="userId", value=userid)
+                      input(type="hidden", name="nombre", value=userNombre)
+                      .row.g-2
+                        .col-md-3
+                          select.form-select(name="rating", required)
+                            option(value="") Calificación
+                            option(value="1") 1 estrella
+                            option(value="2") 2 estrellas
+                            option(value="3") 3 estrellas
+                            option(value="4") 4 estrellas
+                            option(value="5") 5 estrellas
+                        .col-md-7
+                          input.form-control(type="text", name="comment", placeholder="Escribe tu comentario", required)
+                        .col-md-2
+                          button.btn.btn-sm.text-white.w-100(type="submit", style="background-color:#FF8C00;") Guardar
+                    - const courseReviews = reviewsByCourse[String(item.cursoId)] || []
+                    if courseReviews.length
+                      .mt-3
+                        each review in courseReviews
+                          .bg-light.rounded.p-2.mb-2
+                            .d-flex.justify-content-between.align-items-center
+                              strong= review.userName
+                              span.badge.text-bg-warning.text-dark #{review.rating}/5
+                            if review.comment
+                              p.small.text-muted.mb-0.mt-1= review.comment

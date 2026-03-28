@@ -1,0 +1,43 @@
+extends layout
+
+block content
+  .container-fluid.p-0
+    .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
+      .d-flex.align-items-center.justify-content-between
+        a.text-white.text-decoration-none(href="/principal", data-nav="tap")
+          i.bi.bi-arrow-left.me-2
+          | Volver
+        .small.fw-semibold #{completedCount} de #{totalCount} completados
+
+      .d-flex.align-items-center.mt-3
+        .bg-white.rounded-4.d-flex.justify-content-center.align-items-center.me-3(style="width:70px; height:70px;")
+          i.bi.bi-chat-left-text-fill(style="font-size:2rem; color:#25D366;")
+        .flex-grow-1
+          h2.h4.fw-bold.m-0 WhatsApp
+          .progress.mt-2(style="height:8px; border-radius:10px;")
+            - const pct = Math.round((completedCount / totalCount) * 100)
+            .progress-bar(role="progressbar", style=`width:${pct}%`)
+
+    .px-3.mt-4.pb-5
+      .card.border-0.shadow-sm.p-3.mb-3(style="border-radius:20px; border-left:8px solid #1f9f4d !important;")
+        h3.h6.fw-bold.mb-1(style="color:#1f9f4d;") Ejercicios prácticos
+        p.text-muted.small.m-0 Completa cada ejercicio en orden. Aprenderás realizando acciones reales paso a paso.
+
+      each ej in ejercicios
+        - const cardCls = ej.locked ? 'locked' : ''
+        a.text-decoration-none(href=ej.href, data-nav="tap")
+          .card.border-0.shadow-sm.mb-3(class=cardCls, style="border-radius:20px;")
+            .p-3.d-flex.align-items-start
+              if ej.completed
+                .rounded-circle.d-flex.justify-content-center.align-items-center.me-3(style="width:40px; height:40px; background:#25D366;")
+                  i.bi.bi-check-lg(style="font-size:1.4rem; color:#fff;")
+              else
+                .rounded-circle.d-flex.justify-content-center.align-items-center.me-3(style="width:40px; height:40px; background:#e8f7ee; border:2px solid #25D366;")
+                  span.fw-bold(style="color:#25D366;")= ej.orden
+              .flex-grow-1
+                h4.h6.fw-bold.mb-1.text-dark= ej.nombre
+                p.text-muted.small.m-0= ej.desc
+                if ej.locked
+                  p.text-muted.small.mt-2.mb-0 Completa el ejercicio anterior primero
+                if ej.completed
+                  span.badge.rounded-pill.mt-2(style="background:#e8f7ee; color:#1f9f4d; border:1px solid #bfe9cf;") ✓ Completado
