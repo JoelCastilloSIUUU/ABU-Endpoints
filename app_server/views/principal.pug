@@ -33,7 +33,7 @@ block content
       .row.g-3.m-0
         each modulo in modulos
           .col-12.p-0.mb-3
-            - const href = (modulo.nombre === 'WhatsApp') ? '/whatsapp' : '#'
+            - const href = (modulo.nombre === 'WhatsApp') ? `/whatsapp?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}` : '#'
             a.text-decoration-none(href=href)
               .card.border-0.shadow-sm(style="border-radius: 20px;")
                 .p-2.d-flex.align-items-center

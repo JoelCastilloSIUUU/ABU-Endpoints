@@ -4,7 +4,7 @@ block content
   .container-fluid.p-0
     .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
       .d-flex.align-items-center.justify-content-between
-        a.text-white.text-decoration-none(href="/principal", data-nav="tap")
+        a.text-white.text-decoration-none(href=volverHref)
           i.bi.bi-arrow-left.me-2
           | Volver
         .small.fw-semibold #{completedCount} de #{totalCount} completados
@@ -25,7 +25,7 @@ block content
 
       each ej in ejercicios
         - const cardCls = ej.locked ? 'locked' : ''
-        a.text-decoration-none(href=ej.href, data-nav="tap")
+        a.text-decoration-none(href=ej.href)
           .card.border-0.shadow-sm.mb-3(class=cardCls, style="border-radius:20px;")
             .p-3.d-flex.align-items-start
               if ej.completed
@@ -40,4 +40,4 @@ block content
                 if ej.locked
                   p.text-muted.small.mt-2.mb-0 Completa el ejercicio anterior primero
                 if ej.completed
-                  span.badge.rounded-pill.mt-2(style="background:#e8f7ee; color:#1f9f4d; border:1px solid #bfe9cf;") ✓ Completado
+                  span.badge.rounded-pill.mt-2(style="background:#e8f7ee; color:#1f9f4d; border:1px solid #bfe9cf;") ✓ Completado 

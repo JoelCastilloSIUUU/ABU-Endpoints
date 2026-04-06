@@ -16,8 +16,8 @@ router.post('/principal/cursos/:cursoid/delete', ctrlContenidos.deleteCursoPerso
 router.post('/principal/cursos/:cursoid/resenas', ctrlContenidos.crearResenaCurso);
 
 router.get('/whatsapp', ctrlContenidos.whatsapp);
-router.get('/whatsapp/agregar-contacto', ctrlContenidos.whatsappAgregarContacto);
-router.get('/whatsapp/agregar-contacto/paso/:n', ctrlContenidos.whatsappAgregarContactoPaso);
-router.get('/whatsapp/agregar-contacto/completado', ctrlContenidos.whatsappAgregarContactoCompletado);
+router.get('/whatsapp/:exerciseId', ctrlContenidos.whatsappExercise);
+router.get('/whatsapp/:exerciseId/paso/:n', ctrlContenidos.whatsappExercisePaso);
+router.get('/whatsapp/:exerciseId/completado', ctrlContenidos.whatsappExerciseCompletado);
 
 module.exports = router;
