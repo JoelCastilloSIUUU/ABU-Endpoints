@@ -1,21 +1,23 @@
 extends layout
 
 block content
-  .container-fluid.p-0
-    .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
-      a.text-white.text-decoration-none(href=volverHref)
-        i.bi.bi-arrow-left.me-2
-        | Volver
+  .container-fluid.p-0.lesson-shell
+    .p-4.text-white.lesson-header(style=`background:${themeColor || '#25D366'}; border-bottom-left-radius:40px; border-bottom-right-radius:40px;`)
+      .lesson-header-inner
+        a.text-white.text-decoration-none(href=volverHref style="font-size:1.15rem;")
+          i.bi.bi-arrow-left.me-2
+          | Volver
 
-      h2.h4.fw-bold.mt-3.mb-1= title
-      p.small.m-0 Aprende paso a paso dentro de #{modulo}
-      .small.mt-2 Paso 0 de #{totalPasos}
+        h2.fw-bold.mt-4.mb-2(style="font-size:2rem;")= title
+        p.m-0(style="font-size:1.12rem; line-height:1.6;") Aprende paso a paso dentro de #{modulo}
+        .mt-3(style="font-size:1.05rem; font-weight:600;") Paso 0 de #{totalPasos}
 
-    .px-3.mt-4.pb-5
-      .card.border-0.shadow-sm.p-3(style="border-radius:20px;")
-        h3.h6.fw-bold.mb-1(style="color:#D35400;") Ejercicio práctico
-        p.text-muted.small.mb-3 Completa cada paso en orden. Aprenderás sin prisa, con ejemplos claros.
+    .px-3.mt-4.pb-5.lesson-content
+      .lesson-content-inner
+        .card.border-0.shadow-sm.p-4.lesson-card(style="border-radius:20px;")
+          h3.fw-bold.mb-2(style=`color:${themeAccent || '#D35400'}; font-size:1.45rem;`) Ejercicio práctico
+          p.text-muted.mb-4(style="font-size:1.08rem; line-height:1.6;") Completa cada paso en orden. Aprenderás sin prisa, con ejemplos claros.
 
-        a.btn.btn-success.w-100.rounded-pill.py-3.fw-bold(href=comenzarHref)
-          i.bi.bi-play-fill.me-1
-          | Comenzar
+          a.btn.btn-success.w-100.rounded-pill.py-3.fw-bold.lesson-next-btn(href=comenzarHref style=`font-size:1.2rem; background:${themeColor || '#25D366'}; border-color:${themeColor || '#25D366'};`)
+            i.bi.bi-play-fill.me-2
+            | Comenzar

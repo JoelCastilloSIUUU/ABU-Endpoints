@@ -11,11 +11,49 @@ const COURSE_META = {
   Llamadas: { color: '#00BFA5', icono: 'bi-telephone-fill', descripcion: 'Realiza y recibe llamadas, gestiona tus contactos' }
 };
 
+const MODULE_TOTAL_EXERCISES = {
+  whatsapp: 3,
+  youtube: 3,
+  camara: 3,
+  navegador: 3,
+  ajustes: 3,
+  llamadas: 3
+};
+
+const VALID_MODULES = Object.keys(MODULE_TOTAL_EXERCISES);
+
 const getCourseDefaults = (nombre) => ({
   descripcion: COURSE_META[nombre]?.descripcion || 'Curso personalizado creado por el usuario',
   icono: COURSE_META[nombre]?.icono || 'bi-bookmark-fill',
   color_hex: COURSE_META[nombre]?.color || '#FF8C00'
 });
+
+const ensureModuleProgress = (usuario, modulo) => {
+  if (!usuario.progresoModulos) {
+    usuario.progresoModulos = {};
+  }
+
+  if (!usuario.progresoModulos[modulo]) {
+    usuario.progresoModulos[modulo] = {
+      ejerciciosCompletados: [],
+      completado: false
+    };
+  }
+
+  if (!Array.isArray(usuario.progresoModulos[modulo].ejerciciosCompletados)) {
+    usuario.progresoModulos[modulo].ejerciciosCompletados = [];
+  }
+
+  if (typeof usuario.progresoModulos[modulo].completado !== 'boolean') {
+    usuario.progresoModulos[modulo].completado = false;
+  }
+
+  return usuario.progresoModulos[modulo];
+};
+
+const countCompletedModules = (progresoModulos = {}) => {
+  return VALID_MODULES.filter((modulo) => progresoModulos?.[modulo]?.completado).length;
+};
 
 const registro = async (req, res) => {
   const { nombre, email, password } = req.body;
@@ -237,6 +275,69 @@ const usuarioEliminarCurso = async (req, res) => {
   }
 };
 
+const usuarioLeerProgresoModulo = async (req, res) => {
+  const { userid, modulo } = req.params;
+
+  if (!VALID_MODULES.includes(modulo)) {
+    return res.status(400).json({ mensaje: 'Módulo inválido' });
+  }
+
+  try {
+    const usuario = await Usuario.findById(userid);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    const progresoModulo = ensureModuleProgress(usuario, modulo);
+
+    res.status(200).json({
+      modulo,
+      progreso: progresoModulo,
+      progresoGeneral: `${countCompletedModules(usuario.progresoModulos)}/6`
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al leer progreso del módulo', error: err.message });
+  }
+};
+
+const usuarioCompletarEjercicioModulo = async (req, res) => {
+  const { userid, modulo, ejercicioid } = req.params;
+
+  if (!VALID_MODULES.includes(modulo)) {
+    return res.status(400).json({ mensaje: 'Módulo inválido' });
+  }
+
+  try {
+    const usuario = await Usuario.findById(userid);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    const progresoModulo = ensureModuleProgress(usuario, modulo);
+
+    if (!progresoModulo.ejerciciosCompletados.includes(ejercicioid)) {
+      progresoModulo.ejerciciosCompletados.push(ejercicioid);
+    }
+
+    const totalEjercicios = MODULE_TOTAL_EXERCISES[modulo] || 0;
+    progresoModulo.completado = progresoModulo.ejerciciosCompletados.length >= totalEjercicios;
+
+    await usuario.save();
+
+    res.status(200).json({
+      mensaje: 'Ejercicio completado guardado con éxito',
+      modulo,
+      ejercicioid,
+      progreso: progresoModulo,
+      progresoGeneral: `${countCompletedModules(usuario.progresoModulos)}/6`
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al guardar progreso del ejercicio', error: err.message });
+  }
+};
+
 module.exports = {
   registro,
   login,
@@ -245,5 +346,7 @@ module.exports = {
   usuarioBorrar,
   usuarioInscribirCurso,
   usuarioActualizarProgreso,
-  usuarioEliminarCurso
+  usuarioEliminarCurso,
+  usuarioLeerProgresoModulo,
+  usuarioCompletarEjercicioModulo
 };

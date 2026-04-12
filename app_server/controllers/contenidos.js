@@ -1,10 +1,15 @@
+
 const axios = require('axios');
+
+const TOTAL_MODULOS = 6;
 
 const cursos = {
   whatsapp: {
     slug: 'whatsapp',
     nombre: 'WhatsApp',
     color: '#25D366',
+    accent: '#1f9f4d',
+    light: '#e8f7ee',
     icono: 'bi-chat-left-text-fill',
     ejercicios: [
       {
@@ -17,6 +22,8 @@ const cursos = {
             accion: 'Tocar el icono verde de WhatsApp',
             simulacion: 'Simulación: Tocar el icono verde de WhatsApp',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/abrir-whatsapp.png',
+            imagenAlt: 'Icono de WhatsApp en la pantalla principal',
             juego: {
               instruccion: 'Toca el botón correcto para abrir WhatsApp',
               opciones: [
@@ -31,6 +38,8 @@ const cursos = {
             accion: 'Tocar el icono de mensaje en la esquina inferior derecha',
             simulacion: 'Simulación: Tocar el icono de mensaje en la esquina inferior derecha',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/nuevo-chat.png',
+            imagenAlt: 'Botón de nuevo chat en WhatsApp',
             explicacion: {
               titulo: '¿Qué hace este botón?',
               texto: 'El botón de nuevo chat sirve para empezar una conversación nueva o crear un contacto. Normalmente aparece en la esquina inferior derecha para que puedas encontrarlo rápido.'
@@ -49,6 +58,8 @@ const cursos = {
             accion: "Tocar en 'Nuevo contacto'",
             simulacion: "Simulación: Tocar en 'Nuevo contacto'",
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/nuevo-contacto.png',
+            imagenAlt: 'Opción nuevo contacto en WhatsApp',
             explicacion: {
               titulo: '¿Para qué sirve “Nuevo contacto”?',
               texto: 'La opción “Nuevo contacto” te permite guardar a una persona nueva en tu celular para luego escribirle o llamarle fácilmente. Es útil cuando todavía no tienes guardado su número.'
@@ -74,6 +85,8 @@ const cursos = {
             accion: 'Tocar un contacto o conversación existente',
             simulacion: 'Simulación: Tocar un chat existente',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/abrir-chat.png',
+            imagenAlt: 'Lista de chats en WhatsApp',
             explicacion: {
               titulo: '¿Qué es un chat?',
               texto: 'Un chat es la conversación que tienes con una persona o grupo. Para enviar un mensaje, primero debes abrir el chat correcto.'
@@ -92,6 +105,8 @@ const cursos = {
             accion: 'Escribir un mensaje en la caja de texto',
             simulacion: 'Simulación: Escribir “Hola”',
             tipo: 'input',
+            imagenRuta: '/images/minijuegos/whatsapp/escribir-mensaje.png',
+            imagenAlt: 'Caja de texto en un chat de WhatsApp',
             explicacion: {
               titulo: '¿Qué ocurre aquí?',
               texto: 'En la caja de texto escribes lo que quieres decir. Después de escribir, podrás enviarlo con el botón de enviar.'
@@ -108,6 +123,8 @@ const cursos = {
             accion: 'Tocar el botón de enviar',
             simulacion: 'Simulación: Tocar el ícono de enviar',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/boton-enviar.png',
+            imagenAlt: 'Botón de enviar en WhatsApp',
             explicacion: {
               titulo: '¿Qué hace el botón enviar?',
               texto: 'El botón enviar manda el mensaje que acabas de escribir. Normalmente aparece como un avión de papel o flecha.'
@@ -133,6 +150,8 @@ const cursos = {
             accion: 'Seleccionar el chat del contacto al que quieres enviar la foto',
             simulacion: 'Simulación: Tocar una conversación existente',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/chat-foto.png',
+            imagenAlt: 'Chat de WhatsApp para compartir foto',
             explicacion: {
               titulo: '¿Por qué primero debes abrir un chat?',
               texto: 'La foto se envía dentro de una conversación. Primero eliges a la persona o grupo, y luego compartes la imagen en ese chat.'
@@ -151,6 +170,8 @@ const cursos = {
             accion: 'Tocar el ícono de clip o adjuntar',
             simulacion: 'Simulación: Tocar el ícono de clip',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/clip-adjuntar.png',
+            imagenAlt: 'Icono de clip para adjuntar archivos en WhatsApp',
             explicacion: {
               titulo: '¿Qué hace el botón de adjuntar?',
               texto: 'El botón de adjuntar permite enviar archivos como fotos, documentos, ubicación o contactos. En WhatsApp suele verse como un clip.'
@@ -169,6 +190,8 @@ const cursos = {
             accion: 'Elegir una imagen de la galería y tocar enviar',
             simulacion: 'Simulación: Elegir una foto y tocar enviar',
             tipo: 'tap',
+            imagenRuta: '/images/minijuegos/whatsapp/seleccionar-foto.png',
+            imagenAlt: 'Galería abierta para escoger una foto',
             explicacion: {
               titulo: '¿Qué ocurre en este paso?',
               texto: 'Después de abrir la galería, eliges la imagen que quieres compartir. Luego confirmas el envío para que la otra persona la reciba.'
@@ -179,6 +202,543 @@ const cursos = {
                 { texto: 'Foto de cumpleaños', correcta: true },
                 { texto: 'Configuración', correcta: false },
                 { texto: 'Lista de contactos', correcta: false }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  youtube: {
+    slug: 'youtube',
+    nombre: 'YouTube',
+    color: '#FF0000',
+    accent: '#cc0000',
+    light: '#fde8e8',
+    icono: 'bi-play-btn-fill',
+    ejercicios: [
+      {
+        id: 'abrir-youtube',
+        nombre: 'Abrir YouTube',
+        desc: 'Aprende a identificar y abrir la app de YouTube',
+        pasos: [
+          {
+            titulo: 'Identifica el icono de YouTube',
+            accion: 'Buscar el icono rojo con triángulo blanco',
+            simulacion: 'Simulación: Reconocer el icono correcto de YouTube',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/icono-youtube.png',
+            imagenAlt: 'Icono de YouTube en la pantalla principal',
+            juego: {
+              instruccion: 'Toca la app correcta para abrir YouTube',
+              opciones: [
+                { texto: 'WhatsApp', correcta: false },
+                { texto: 'YouTube', correcta: true },
+                { texto: 'Cámara', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Abre la aplicación',
+            accion: 'Tocar una vez el icono de YouTube',
+            simulacion: 'Simulación: Tocar el icono de YouTube',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/abrir-app.png',
+            imagenAlt: 'Pantalla de inicio con icono de YouTube',
+            explicacion: {
+              titulo: '¿Qué pasa al abrirla?',
+              texto: 'YouTube abre una lista de videos recomendados y te permite buscar temas, canales y música.'
+            },
+            juego: {
+              instruccion: '¿Qué acción abre la app?',
+              opciones: [
+                { texto: 'Tocar una vez', correcta: true },
+                { texto: 'Mantener presionado', correcta: false },
+                { texto: 'Arrastrar', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Reconoce la pantalla principal',
+            accion: 'Observar videos, menú y barra de búsqueda',
+            simulacion: 'Simulación: Mirar la pantalla principal de YouTube',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/pantalla-principal.png',
+            imagenAlt: 'Pantalla principal de YouTube',
+            juego: {
+              instruccion: 'Toca el elemento que sí aparece en la pantalla principal de YouTube',
+              opciones: [
+                { texto: 'Videos recomendados', correcta: true },
+                { texto: 'Teclado numérico', correcta: false },
+                { texto: 'Linterna', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'buscar-video',
+        nombre: 'Buscar un video',
+        desc: 'Aprende a usar la barra de búsqueda en YouTube',
+        pasos: [
+          {
+            titulo: 'Ubica la lupa o barra de búsqueda',
+            accion: 'Tocar el icono de búsqueda',
+            simulacion: 'Simulación: Tocar la lupa en YouTube',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/lupa-busqueda.png',
+            imagenAlt: 'Icono de búsqueda en YouTube',
+            juego: {
+              instruccion: 'Toca el botón que usarías para buscar un video',
+              opciones: [
+                { texto: 'Buscar', correcta: true },
+                { texto: 'Suscripciones', correcta: false },
+                { texto: 'Inicio', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Escribe lo que quieres ver',
+            accion: 'Escribir el nombre del video o tema',
+            simulacion: 'Simulación: Escribir “Recetas fáciles”',
+            tipo: 'input',
+            imagenRuta: '/images/minijuegos/youtube/escribir-busqueda.png',
+            imagenAlt: 'Barra de búsqueda de YouTube con teclado',
+            explicacion: {
+              titulo: '¿Qué conviene escribir?',
+              texto: 'Puedes escribir una canción, una receta, una noticia o cualquier tema que quieras aprender o mirar.'
+            },
+            juego: {
+              instruccion: 'Escribe exactamente: Recetas fáciles',
+              placeholder: 'Escribe aquí tu búsqueda',
+              respuestaCorrecta: 'Recetas fáciles',
+              botonTexto: 'Comprobar búsqueda'
+            }
+          },
+          {
+            titulo: 'Selecciona un resultado',
+            accion: 'Tocar el video que quieres reproducir',
+            simulacion: 'Simulación: Elegir un video de la lista',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/resultados-busqueda.png',
+            imagenAlt: 'Resultados de búsqueda en YouTube',
+            juego: {
+              instruccion: 'Toca el elemento que representa un video para verlo',
+              opciones: [
+                { texto: 'Miniatura del video', correcta: true },
+                { texto: 'Botón de apagar', correcta: false },
+                { texto: 'Wi‑Fi', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'reproducir-video',
+        nombre: 'Reproducir un video',
+        desc: 'Aprende a pausar, continuar y usar pantalla completa',
+        pasos: [
+          {
+            titulo: 'Reproduce el video',
+            accion: 'Tocar el video elegido para abrirlo',
+            simulacion: 'Simulación: Abrir un video en YouTube',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/abrir-video.png',
+            imagenAlt: 'Video abierto en YouTube',
+            juego: {
+              instruccion: 'Toca la acción que sirve para empezar a ver el video',
+              opciones: [
+                { texto: 'Abrir el video', correcta: true },
+                { texto: 'Cerrar la app', correcta: false },
+                { texto: 'Borrar historial', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Pausa o continúa',
+            accion: 'Tocar una vez la pantalla para ver los controles',
+            simulacion: 'Simulación: Pausar y seguir reproduciendo',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/pausar-video.png',
+            imagenAlt: 'Controles de reproducción en YouTube',
+            juego: {
+              instruccion: 'Toca el control que detiene el video momentáneamente',
+              opciones: [
+                { texto: 'Pausa', correcta: true },
+                { texto: 'Buscar', correcta: false },
+                { texto: 'Compartir', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Usa pantalla completa',
+            accion: 'Tocar el icono para ampliar el video',
+            simulacion: 'Simulación: Activar pantalla completa',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/youtube/pantalla-completa.png',
+            imagenAlt: 'Icono de pantalla completa en YouTube',
+            juego: {
+              instruccion: 'Toca la opción que hace el video más grande',
+              opciones: [
+                { texto: 'Pantalla completa', correcta: true },
+                { texto: 'Inicio', correcta: false },
+                { texto: 'Notificaciones', correcta: false }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  camara: {
+    slug: 'camara',
+    nombre: 'Cámara',
+    color: '#8E44AD',
+    accent: '#6f2d91',
+    light: '#f4e8fb',
+    icono: 'bi-camera-fill',
+    ejercicios: [
+      {
+        id: 'abrir-camara',
+        nombre: 'Abrir la cámara',
+        desc: 'Aprende a identificar y abrir la app de cámara',
+        pasos: [
+          {
+            titulo: 'Identifica el icono de cámara',
+            accion: 'Buscar el icono de una cámara en la pantalla',
+            simulacion: 'Simulación: Reconocer el icono correcto de cámara',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/icono-camara.png',
+            imagenAlt: 'Icono de la app Cámara',
+            juego: {
+              instruccion: 'Toca la app correcta para abrir la cámara',
+              opciones: [
+                { texto: 'Galería', correcta: false },
+                { texto: 'Cámara', correcta: true },
+                { texto: 'WhatsApp', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Abre la aplicación',
+            accion: 'Tocar una vez el icono de cámara',
+            simulacion: 'Simulación: Tocar el icono de cámara',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/abrir-app.png',
+            imagenAlt: 'Pantalla de inicio con icono de cámara',
+            juego: {
+              instruccion: '¿Qué acción abre la cámara?',
+              opciones: [
+                { texto: 'Tocar una vez', correcta: true },
+                { texto: 'Deslizar hacia abajo', correcta: false },
+                { texto: 'Abrir ajustes', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Reconoce el botón de tomar foto',
+            accion: 'Buscar el botón circular grande',
+            simulacion: 'Simulación: Ubicar el botón de disparo',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/boton-disparo.png',
+            imagenAlt: 'Botón circular para tomar foto',
+            juego: {
+              instruccion: 'Toca el botón que sirve para tomar una foto',
+              opciones: [
+                { texto: 'Disparador', correcta: true },
+                { texto: 'Flash', correcta: false },
+                { texto: 'Zoom', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'tomar-foto',
+        nombre: 'Tomar una foto',
+        desc: 'Aprende a encuadrar y capturar una foto',
+        pasos: [
+          {
+            titulo: 'Apunta la cámara al objeto',
+            accion: 'Dirigir el celular hacia lo que quieres fotografiar',
+            simulacion: 'Simulación: Enfocar un objeto con la cámara',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/apuntar-objeto.png',
+            imagenAlt: 'Pantalla de cámara apuntando a un objeto',
+            explicacion: {
+              titulo: '¿Qué significa encuadrar?',
+              texto: 'Encuadrar es acomodar lo que quieres fotografiar dentro de la pantalla antes de tomar la foto.'
+            },
+            juego: {
+              instruccion: 'Toca la acción correcta antes de tomar la foto',
+              opciones: [
+                { texto: 'Apuntar al objeto', correcta: true },
+                { texto: 'Cerrar la cámara', correcta: false },
+                { texto: 'Llamar a alguien', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Mantén el celular estable',
+            accion: 'Sujetar el celular sin moverlo demasiado',
+            simulacion: 'Simulación: Sujetar el teléfono con firmeza',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/sujetar-estable.png',
+            imagenAlt: 'Manos sosteniendo el celular para una foto',
+            juego: {
+              instruccion: '¿Qué ayuda a que la foto no salga movida?',
+              opciones: [
+                { texto: 'Mantenerlo estable', correcta: true },
+                { texto: 'Tapar la cámara', correcta: false },
+                { texto: 'Apagar la pantalla', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Toma la foto',
+            accion: 'Tocar el botón circular de disparo',
+            simulacion: 'Simulación: Presionar el botón para tomar la foto',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/tomar-foto.png',
+            imagenAlt: 'Botón de tomar foto presionado',
+            juego: {
+              instruccion: 'Toca el botón correcto para capturar la imagen',
+              opciones: [
+                { texto: 'Disparador', correcta: true },
+                { texto: 'Atrás', correcta: false },
+                { texto: 'Galería', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'ver-foto',
+        nombre: 'Ver la foto tomada',
+        desc: 'Aprende a revisar una foto en la galería rápida de la cámara',
+        pasos: [
+          {
+            titulo: 'Busca la miniatura de la foto',
+            accion: 'Ubicar la imagen pequeña que aparece en la esquina',
+            simulacion: 'Simulación: Ver la miniatura de la última foto',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/miniatura-foto.png',
+            imagenAlt: 'Miniatura de foto en la cámara',
+            juego: {
+              instruccion: 'Toca el elemento que te deja ver la última foto tomada',
+              opciones: [
+                { texto: 'Miniatura', correcta: true },
+                { texto: 'Flash', correcta: false },
+                { texto: 'Temporizador', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Abre la foto',
+            accion: 'Tocar la miniatura para abrir la imagen',
+            simulacion: 'Simulación: Abrir la foto recién tomada',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/abrir-foto.png',
+            imagenAlt: 'Foto abierta desde la cámara',
+            juego: {
+              instruccion: '¿Qué acción te muestra la foto completa?',
+              opciones: [
+                { texto: 'Tocar la miniatura', correcta: true },
+                { texto: 'Cerrar la app', correcta: false },
+                { texto: 'Volver al menú', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Confirma si salió bien',
+            accion: 'Revisar si la foto se ve clara y centrada',
+            simulacion: 'Simulación: Mirar si la foto salió bien',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/camara/revisar-foto.png',
+            imagenAlt: 'Persona revisando si una foto salió bien',
+            juego: {
+              instruccion: 'Toca la señal de que la foto quedó bien',
+              opciones: [
+                { texto: 'Se ve clara', correcta: true },
+                { texto: 'Pantalla negra', correcta: false },
+                { texto: 'No se abre', correcta: false }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  llamadas: {
+    slug: 'llamadas',
+    nombre: 'Llamadas',
+    color: '#00BFA5',
+    accent: '#009e88',
+    light: '#e5fbf7',
+    icono: 'bi-telephone-fill',
+    ejercicios: [
+      {
+        id: 'abrir-telefono',
+        nombre: 'Abrir la app Teléfono',
+        desc: 'Aprende a identificar y abrir la app de llamadas',
+        pasos: [
+          {
+            titulo: 'Identifica el icono de teléfono',
+            accion: 'Buscar el icono con forma de auricular',
+            simulacion: 'Simulación: Reconocer el icono de teléfono',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/icono-telefono.png',
+            imagenAlt: 'Icono de Teléfono en la pantalla principal',
+            juego: {
+              instruccion: 'Toca la app correcta para hacer llamadas',
+              opciones: [
+                { texto: 'Teléfono', correcta: true },
+                { texto: 'YouTube', correcta: false },
+                { texto: 'Cámara', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Abre la aplicación',
+            accion: 'Tocar una vez el icono de Teléfono',
+            simulacion: 'Simulación: Tocar el icono de Teléfono',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/abrir-telefono.png',
+            imagenAlt: 'Pantalla de inicio con la app Teléfono',
+            juego: {
+              instruccion: '¿Qué acción abre la app de llamadas?',
+              opciones: [
+                { texto: 'Tocar una vez', correcta: true },
+                { texto: 'Girar el celular', correcta: false },
+                { texto: 'Subir volumen', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Reconoce las opciones principales',
+            accion: 'Observar teclado, recientes y contactos',
+            simulacion: 'Simulación: Mirar la pantalla principal de Teléfono',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/pantalla-telefono.png',
+            imagenAlt: 'Pantalla principal de la app Teléfono',
+            juego: {
+              instruccion: 'Toca una opción que sí aparece en la app Teléfono',
+              opciones: [
+                { texto: 'Teclado numérico', correcta: true },
+                { texto: 'Filtro de fotos', correcta: false },
+                { texto: 'Subtítulos', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'marcar-numero',
+        nombre: 'Marcar un número',
+        desc: 'Aprende a usar el teclado para hacer una llamada',
+        pasos: [
+          {
+            titulo: 'Abre el teclado',
+            accion: 'Tocar la opción de teclado o marcador',
+            simulacion: 'Simulación: Abrir el teclado numérico',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/abrir-teclado.png',
+            imagenAlt: 'Teclado numérico de la app Teléfono',
+            juego: {
+              instruccion: 'Toca la opción que sirve para escribir un número',
+              opciones: [
+                { texto: 'Teclado', correcta: true },
+                { texto: 'Galería', correcta: false },
+                { texto: 'Cámara', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Escribe el número',
+            accion: 'Tocar los números en pantalla',
+            simulacion: 'Simulación: Escribir 099',
+            tipo: 'input',
+            imagenRuta: '/images/minijuegos/llamadas/escribir-numero.png',
+            imagenAlt: 'Teclado de llamadas para escribir un número',
+            explicacion: {
+              titulo: '¿Para qué sirve este paso?',
+              texto: 'Aquí marcas manualmente el número de la persona a la que quieres llamar si todavía no está guardada en tus contactos.'
+            },
+            juego: {
+              instruccion: 'Escribe exactamente: 099',
+              placeholder: 'Escribe aquí el número',
+              respuestaCorrecta: '099',
+              botonTexto: 'Comprobar número'
+            }
+          },
+          {
+            titulo: 'Presiona llamar',
+            accion: 'Tocar el botón verde con auricular',
+            simulacion: 'Simulación: Iniciar la llamada',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/boton-llamar.png',
+            imagenAlt: 'Botón verde para llamar',
+            juego: {
+              instruccion: 'Toca el botón que inicia la llamada',
+              opciones: [
+                { texto: 'Llamar', correcta: true },
+                { texto: 'Borrar', correcta: false },
+                { texto: 'Volver', correcta: false }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        id: 'llamar-contacto',
+        nombre: 'Llamar a un contacto',
+        desc: 'Aprende a usar tu lista de contactos para llamar más rápido',
+        pasos: [
+          {
+            titulo: 'Abre la pestaña de contactos',
+            accion: 'Tocar la sección Contactos',
+            simulacion: 'Simulación: Entrar a la lista de contactos',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/pestana-contactos.png',
+            imagenAlt: 'Pestaña de contactos en la app Teléfono',
+            juego: {
+              instruccion: 'Toca la opción donde verías tus contactos guardados',
+              opciones: [
+                { texto: 'Contactos', correcta: true },
+                { texto: 'Ajustes', correcta: false },
+                { texto: 'Bluetooth', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Busca a la persona',
+            accion: 'Tocar el nombre del contacto',
+            simulacion: 'Simulación: Elegir un contacto de la lista',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/elegir-contacto.png',
+            imagenAlt: 'Lista de contactos guardados',
+            juego: {
+              instruccion: 'Toca el nombre de la persona a la que llamarías',
+              opciones: [
+                { texto: 'María', correcta: true },
+                { texto: 'Linterna', correcta: false },
+                { texto: 'Wi‑Fi', correcta: false }
+              ]
+            }
+          },
+          {
+            titulo: 'Inicia la llamada',
+            accion: 'Tocar el icono de teléfono del contacto',
+            simulacion: 'Simulación: Llamar a un contacto guardado',
+            tipo: 'tap',
+            imagenRuta: '/images/minijuegos/llamadas/llamar-contacto.png',
+            imagenAlt: 'Botón para llamar desde un contacto',
+            juego: {
+              instruccion: 'Toca la acción correcta para llamar a ese contacto',
+              opciones: [
+                { texto: 'Icono de teléfono', correcta: true },
+                { texto: 'Editar contacto', correcta: false },
+                { texto: 'Borrar contacto', correcta: false }
               ]
             }
           }
@@ -200,12 +760,12 @@ const COURSE_META = {
 const getApiBase = (req) => `${req.protocol}://${req.get('host')}/api`;
 
 const learningModules = [
-  { nombre: 'WhatsApp', desc: 'Envía mensajes, fotos y audios a tus seres queridos', icono: 'bi-chat-left-text-fill', color: '#25D366' },
-  { nombre: 'YouTube', desc: 'Mira videos, busca contenido y guarda tus favoritos', icono: 'bi-play-btn-fill', color: '#FF0000' },
-  { nombre: 'Cámara', desc: 'Toma fotos, guárdalas y compártelas fácilmente', icono: 'bi-camera-fill', color: '#833AB4' },
-  { nombre: 'Navegador', desc: 'Busca información en internet de forma segura', icono: 'bi-globe', color: '#0D6EFD' },
-  { nombre: 'Ajustes', desc: 'Personaliza tu celular y maneja la configuración', icono: 'bi-gear-fill', color: '#6C757D' },
-  { nombre: 'Llamadas', desc: 'Realiza y recibe llamadas, gestiona tus contactos', icono: 'bi-telephone-fill', color: '#00BFA5' }
+  { slug: 'whatsapp', nombre: 'WhatsApp', desc: 'Envía mensajes, fotos y audios a tus seres queridos', icono: 'bi-chat-left-text-fill', color: '#25D366' },
+  { slug: 'youtube', nombre: 'YouTube', desc: 'Mira videos, busca contenido y guarda tus favoritos', icono: 'bi-play-btn-fill', color: '#FF0000' },
+  { slug: 'camara', nombre: 'Cámara', desc: 'Toma fotos, guárdalas y compártelas fácilmente', icono: 'bi-camera-fill', color: '#833AB4' },
+  { slug: 'navegador', nombre: 'Navegador', desc: 'Busca información en internet de forma segura', icono: 'bi-globe', color: '#0D6EFD' },
+  { slug: 'ajustes', nombre: 'Ajustes', desc: 'Personaliza tu celular y maneja la configuración', icono: 'bi-gear-fill', color: '#6C757D' },
+  { slug: 'llamadas', nombre: 'Llamadas', desc: 'Realiza y recibe llamadas, gestiona tus contactos', icono: 'bi-telephone-fill', color: '#00BFA5' }
 ];
 
 const buildUserQuery = (nombre, userid) =>
@@ -221,6 +781,9 @@ const getUserContext = (req) => {
   };
 };
 
+
+const resolveModulo = (req) => req.params.modulo || req.path.split('/').filter(Boolean)[0] || '';
+
 const getCourseData = (courseSlug) => cursos[courseSlug] || null;
 
 const getExerciseData = (courseSlug, exerciseId) => {
@@ -229,9 +792,14 @@ const getExerciseData = (courseSlug, exerciseId) => {
   return course.ejercicios.find((e) => e.id === exerciseId) || null;
 };
 
+const countCompletedModules = (progresoModulos = {}) => {
+  const keys = ['whatsapp', 'youtube', 'camara', 'navegador', 'ajustes', 'llamadas'];
+  return keys.filter((key) => progresoModulos?.[key]?.completado).length;
+};
+
 async function fetchUserAndReviews(req, userId) {
   if (!userId) {
-    return { cursosActivos: [], reviewsByCourse: {} };
+    return { usuario: null, cursosActivos: [], reviewsByCourse: {} };
   }
 
   const userResponse = await axios.get(`${getApiBase(req)}/users/${userId}`);
@@ -253,6 +821,22 @@ async function fetchUserAndReviews(req, userId) {
   return { usuario, cursosActivos, reviewsByCourse };
 }
 
+async function fetchModuleProgress(req, userId, modulo) {
+  if (!userId) {
+    return {
+      ejerciciosCompletados: [],
+      completado: false
+    };
+  }
+
+  try {
+    const response = await axios.get(`${getApiBase(req)}/users/${userId}/progreso/${modulo}`);
+    return response.data.progreso || { ejerciciosCompletados: [], completado: false };
+  } catch (_err) {
+    return { ejerciciosCompletados: [], completado: false };
+  }
+}
+
 const principal = async (req, res) => {
   const nombre = req.query.nombre || 'Usuario';
   const userid = req.query.userid || '';
@@ -262,6 +846,7 @@ const principal = async (req, res) => {
 
   let cursosActivos = [];
   let reviewsByCourse = {};
+  let progeso = `0/${TOTAL_MODULOS}`;
 
   if (userid) {
     try {
@@ -271,11 +856,14 @@ const principal = async (req, res) => {
         meta: COURSE_META[curso.nombreCurso] || { color: '#FF8C00', icono: 'bi-bookmark-fill' }
       }));
       reviewsByCourse = userData.reviewsByCourse;
+
+      const completedModules = countCompletedModules(userData.usuario?.progresoModulos || {});
+      progeso = `${completedModules}/${TOTAL_MODULOS}`;
     } catch (err) {
       return res.render('principal', {
         title: `¡Hola, ${nombre}!`,
         subtitle: 'Sigamos aprendiendo juntos',
-        progeso: '0/6',
+        progeso,
         seccionTitulo: 'Tu camino de aprendizaje',
         seccionDesc: 'Elige un tema para comenzar. Cada módulo tiene 3 ejercicios prácticos. Aprenderás haciendo, sin prisa y con ejemplos claros.',
         modulos: learningModules,
@@ -291,7 +879,7 @@ const principal = async (req, res) => {
   res.render('principal', {
     title: `¡Hola, ${nombre}!`,
     subtitle: 'Sigamos aprendiendo juntos',
-    progeso: '0/6',
+    progeso,
     seccionTitulo: 'Tu camino de aprendizaje',
     seccionDesc: 'Elige un tema para comenzar. Cada módulo tiene 3 ejercicios prácticos. Aprenderás haciendo, sin prisa y con ejemplos claros.',
     modulos: learningModules,
@@ -358,27 +946,31 @@ const crearResenaCurso = async (req, res) => {
   }
 };
 
-function whatsapp(req, res) {
+async function moduleHome(req, res) {
   const { nombre, userid, userQuery } = getUserContext(req);
-  const course = getCourseData('whatsapp');
+  const modulo = resolveModulo(req);
+  const course = getCourseData(modulo);
 
-  const completedExerciseId = req.query.done || '';
-  const completedCount = completedExerciseId ? 1 : 0;
+  if (!course) {
+    return res.redirect(`/principal?${userQuery}`);
+  }
+
+  const moduleProgress = await fetchModuleProgress(req, userid, modulo);
+  const completedIds = moduleProgress.ejerciciosCompletados || [];
+  const completedCount = completedIds.length;
 
   const ejercicios = course.ejercicios.map((ejercicio, index) => {
-    const isCompleted = completedExerciseId === ejercicio.id;
-    const previousCompleted = index === 0 || completedExerciseId === course.ejercicios[index - 1].id || isCompleted;
+    const isCompleted = completedIds.includes(ejercicio.id);
+    const isUnlocked = index <= completedCount;
 
     return {
       key: ejercicio.id,
       orden: index + 1,
       nombre: ejercicio.nombre,
       desc: ejercicio.desc,
-      href: previousCompleted
-        ? `/${course.slug}/${ejercicio.id}?${userQuery}`
-        : '#',
+      href: isUnlocked ? `/${course.slug}/${ejercicio.id}?${userQuery}` : '#',
       completed: isCompleted,
-      locked: !previousCompleted
+      locked: !isUnlocked
     };
   });
 
@@ -389,39 +981,49 @@ function whatsapp(req, res) {
     nombre,
     userid,
     volverHref: `/principal?${userQuery}`,
-    ejercicios
+    ejercicios,
+    themeColor: course.color,
+    themeAccent: course.accent,
+    themeLight: course.light,
+    themeIcon: course.icono
   });
 }
 
-function whatsappExercise(req, res) {
+function moduleExercise(req, res) {
   const { userQuery } = getUserContext(req);
-  const exerciseId = req.params.exerciseId;
-  const course = getCourseData('whatsapp');
-  const exercise = getExerciseData('whatsapp', exerciseId);
+  const modulo = resolveModulo(req);
+  const { exerciseId } = req.params;
+  const course = getCourseData(modulo);
+  const exercise = getExerciseData(modulo, exerciseId);
 
   if (!course || !exercise) {
-    return res.redirect(`/whatsapp?${userQuery}`);
+    return res.redirect(`/${modulo}?${userQuery}`);
   }
 
   res.render('whatsapp_agregar_contacto', {
     title: exercise.nombre,
     modulo: course.nombre,
     totalPasos: exercise.pasos.length,
-    volverHref: `/whatsapp?${userQuery}`,
-    comenzarHref: `/${course.slug}/${exercise.id}/paso/1?${userQuery}`
+    volverHref: `/${modulo}?${userQuery}`,
+    comenzarHref: `/${course.slug}/${exercise.id}/paso/1?${userQuery}`,
+    themeColor: course.color,
+    themeAccent: course.accent,
+    themeLight: course.light,
+    themeIcon: course.icono
   });
 }
 
-function whatsappExercisePaso(req, res) {
+function moduleExercisePaso(req, res) {
   const { userQuery } = getUserContext(req);
-  const exerciseId = req.params.exerciseId;
+  const modulo = resolveModulo(req);
+  const { exerciseId } = req.params;
   const paso = Number(req.params.n);
 
-  const course = getCourseData('whatsapp');
-  const exercise = getExerciseData('whatsapp', exerciseId);
+  const course = getCourseData(modulo);
+  const exercise = getExerciseData(modulo, exerciseId);
 
   if (!course || !exercise) {
-    return res.redirect(`/whatsapp?${userQuery}`);
+    return res.redirect(`/${modulo}?${userQuery}`);
   }
 
   const totalPasos = exercise.pasos.length;
@@ -449,34 +1051,56 @@ function whatsappExercisePaso(req, res) {
     tipo: currentStep.tipo || 'info',
     juego: currentStep.juego || null,
     explicacion: currentStep.explicacion || null,
-    nextHref
+    imagenRuta: currentStep.imagenRuta || null,
+    imagenAlt: currentStep.imagenAlt || 'Imagen de apoyo del minijuego',
+    nextHref,
+    themeColor: course.color,
+    themeAccent: course.accent,
+    themeLight: course.light,
+    themeIcon: course.icono
   });
 }
 
-function whatsappExerciseCompletado(req, res) {
-  const { userQuery } = getUserContext(req);
-  const exerciseId = req.params.exerciseId;
-  const course = getCourseData('whatsapp');
-  const exercise = getExerciseData('whatsapp', exerciseId);
+async function moduleExerciseCompletado(req, res) {
+  const { userid, userQuery } = getUserContext(req);
+  const modulo = resolveModulo(req);
+  const { exerciseId } = req.params;
+  const course = getCourseData(modulo);
+  const exercise = getExerciseData(modulo, exerciseId);
 
   if (!course || !exercise) {
-    return res.redirect(`/whatsapp?${userQuery}`);
+    return res.redirect(`/${modulo}?${userQuery}`);
+  }
+
+  if (userid) {
+    try {
+      await axios.post(`${getApiBase(req)}/users/${userid}/progreso/${modulo}/${exercise.id}`);
+    } catch (_err) {
+    }
   }
 
   res.render('whatsapp_agregar_contacto_completado', {
     title: exercise.nombre,
     modulo: course.nombre,
-    volverHref: `/whatsapp?${userQuery}`,
-    continuarHref: `/whatsapp?${userQuery}&done=${exercise.id}`
+    continuarHref: `/${modulo}?${userQuery}`,
+    volverHref: `/${modulo}?${userQuery}`,
+    themeColor: course.color,
+    themeAccent: course.accent,
+    themeLight: course.light,
+    themeIcon: course.icono
   });
 }
 
 module.exports = {
   principal,
-  whatsapp,
-  whatsappExercise,
-  whatsappExercisePaso,
-  whatsappExerciseCompletado,
+  whatsapp: moduleHome,
+  whatsappExercise: moduleExercise,
+  whatsappExercisePaso: moduleExercisePaso,
+  whatsappExerciseCompletado: moduleExerciseCompletado,
+  moduleHome,
+  moduleExercise,
+  moduleExercisePaso,
+  moduleExerciseCompletado,
   addCursoPersonalizado,
   deleteCursoPersonalizado,
   crearResenaCurso

@@ -1,20 +1,23 @@
 extends layout
 
 block content
-  .container-fluid.p-0
-    .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
-      a.text-white.text-decoration-none(href=volverHref)
-        i.bi.bi-arrow-left.me-2
-        | Volver
-      h2.h4.fw-bold.mt-3.mb-1= title
-      p.small.m-0 Ejercicio completado dentro de #{modulo}
+  .container-fluid.p-0.lesson-shell
+    .p-4.text-white.lesson-header(style=`background:${themeColor || '#25D366'}; border-bottom-left-radius:40px; border-bottom-right-radius:40px;`)
+      .lesson-header-inner
+        a.text-white.text-decoration-none(href=volverHref style="font-size:1.15rem;")
+          i.bi.bi-arrow-left.me-2
+          | Volver
 
-  .px-3.mt-4.pb-5
-    .card.border-0.shadow-sm.p-4.mb-3(style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;")
-      .text-center
-        i.bi.bi-emoji-smile(style="font-size:2.2rem;")
-        h3.h5.fw-bold.mt-2.mb-2 ¡Lo lograste!
-        p.text-muted.mb-0 Has completado este ejercicio. Cada vez te sientes más cómodo con tu celular.
+        h2.fw-bold.mt-4.mb-2(style="font-size:2rem;")= title
+        p.m-0(style="font-size:1.12rem; line-height:1.6;") Ejercicio completado dentro de #{modulo}
 
-    a.btn.btn-warning.w-100.rounded-pill.py-3.fw-bold.text-white(href=continuarHref)
-      | Continuar al siguiente ejercicio
+    .px-3.mt-4.pb-5.lesson-content
+      .lesson-content-inner
+        .card.border-0.shadow-sm.p-4.mb-4.lesson-card(style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;")
+          .text-center
+            i.bi.bi-emoji-smile(style="font-size:2.6rem;")
+            h3.fw-bold.mt-3.mb-3(style="font-size:1.6rem;") ¡Lo lograste!
+            p.text-muted.mb-0(style="font-size:1.12rem; line-height:1.7;") Has completado este ejercicio. Cada vez te sientes más cómodo con tu celular.
+
+        a.btn.btn-warning.w-100.rounded-pill.py-3.fw-bold.text-white.lesson-next-btn(href=continuarHref style=`font-size:1.2rem; background:${themeColor || '#25D366'}; border-color:${themeColor || '#25D366'};`)
+          | Continuar al siguiente ejercicio

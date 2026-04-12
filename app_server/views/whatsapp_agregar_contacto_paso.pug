@@ -1,104 +1,123 @@
 extends layout
 
 block content
-  .container-fluid.p-0
-    .p-4.text-white(style="background:#25D366; border-bottom-left-radius:40px; border-bottom-right-radius:40px;")
-      a.text-white.text-decoration-none(href=volverHref)
-        i.bi.bi-arrow-left.me-2
-        | Volver
+  .container-fluid.p-0.lesson-shell
+    .p-4.text-white.lesson-header(style=`background:${themeColor || '#25D366'}; border-bottom-left-radius:40px; border-bottom-right-radius:40px;`)
+      .lesson-header-inner
+        a.text-white.text-decoration-none(href=volverHref style="font-size:1.15rem;")
+          i.bi.bi-arrow-left.me-2
+          | Volver
 
-      h2.h4.fw-bold.mt-3.mb-1= title
-      p.small.m-0 Aprende paso a paso dentro de #{modulo}
+        h2.fw-bold.mt-4.mb-2(style="font-size:2rem;")= title
+        p.m-0(style="font-size:1.12rem; line-height:1.6;") Aprende paso a paso dentro de #{modulo}
 
-      .d-flex.justify-content-between.align-items-center.mt-2
-        .small Paso #{paso} de #{totalPasos}
-        .small.fw-semibold #{progressText}
+        .progress.mt-3(style="height:12px; border-radius:10px;")
+          - const pct = Math.round((paso / totalPasos) * 100)
+          .progress-bar(role="progressbar", style=`width:${pct}%; background:#fff; opacity:0.9;`)
 
-      .progress.mt-2(style="height:8px; border-radius:10px;")
-        - const pct = Math.round((paso / totalPasos) * 100)
-        .progress-bar(role="progressbar", style=`width:${pct}%`)
+    .px-3.mt-4.pb-5.lesson-content
+      .lesson-content-inner
+        .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px;")
+          .d-flex.align-items-start
+            .rounded-circle.d-flex.justify-content-center.align-items-center.me-3.lesson-step-circle(
+              style=`width:54px; height:54px; background:${themeLight || '#e8f7ee'}; border:3px solid ${themeColor || '#25D366'}; min-width:54px;`
+            )
+              span.fw-bold(style=`color:${themeColor || '#25D366'};`)= paso
 
-  .px-3.mt-4.pb-5
-    .card.border-0.shadow-sm.p-3.mb-3(style="border-radius:20px;")
-      .d-flex.align-items-start
-        .rounded-circle.d-flex.justify-content-center.align-items-center.me-3(
-          style="width:42px; height:42px; background:#e8f7ee; border:2px solid #25D366;"
-        )
-          span.fw-bold(style="color:#25D366;")= paso
+            .flex-grow-1
+              h3.h6.fw-bold.mb-2.text-dark= titulo
+              p.small.m-0
+                span.text-muted= instruccion
+                span.fw-bold(style="color:#C0392B;")= accion
 
-        .flex-grow-1
-          h3.h6.fw-bold.mb-1.text-dark= titulo
-          p.small.m-0
-            span.text-muted= instruccion
-            span.fw-bold(style="color:#C0392B;")= accion
+        .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style=`border-radius:20px; background:${themeLight || '#eef8ff'}; border:1px solid #dbe7ef;`)
+          h4.h6.fw-bold.mb-3(style=`color:${themeAccent || '#0D6EFD'};`) Imagen de apoyo
+          .text-center
+            if imagenRuta
+              img.img-fluid.rounded.shadow-sm.mb-3(
+                src=imagenRuta
+                alt=imagenAlt
+                style="max-height:260px; object-fit:contain;"
+                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+              )
+              .d-none.flex-column.justify-content-center.align-items-center.rounded.p-4(style="min-height:220px; border:2px dashed #c8d1d8; background:#fff;")
+                i.bi.bi-image(style="font-size:2.2rem; color:#94a3b8;")
+                p.fw-semibold.mt-3.mb-1 Aquí puedes colocar una imagen para este paso.
+                p.text-muted.small.mb-0 Ruta sugerida: #{imagenRuta}
+            else
+              .d-flex.flex-column.justify-content-center.align-items-center.rounded.p-4(style="min-height:220px; border:2px dashed #c8d1d8; background:#fff;")
+                i.bi.bi-image(style="font-size:2.2rem; color:#94a3b8;")
+                p.fw-semibold.mt-3.mb-1 Aquí puedes colocar una imagen para este paso.
+                p.text-muted.small.mb-0 Añade una ruta de imagen en la configuración del minijuego.
 
-    if explicacion
-      .card.border-0.shadow-sm.p-3.mb-3(style="border-radius:20px; background:#eef8ff; border:1px solid #cfe8ff;")
-        h4.h6.fw-bold.mb-2(style="color:#0D6EFD;")= explicacion.titulo
-        p.text-muted.small.m-0= explicacion.texto
+        if explicacion
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px; background:#eef8ff; border:1px solid #cfe8ff;")
+            h4.h6.fw-bold.mb-2(style="color:#0D6EFD;")= explicacion.titulo
+            p.text-muted.small.m-0= explicacion.texto
 
-    if tipo === 'tap' && juego
-      .card.border-0.shadow-sm.p-4.mb-3(
-        style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;"
-        data-minigame="tap"
-      )
-        .text-center
-          i.bi.bi-hand-index-thumb(style="font-size:2rem; color:#4b4b4b;")
-          p.fw-semibold.mt-2.mb-4= juego.instruccion
+        if tipo === 'tap' && juego
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card.lesson-game-card(
+            style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;"
+            data-minigame="tap"
+          )
+            .text-center
+              i.bi.bi-hand-index-thumb(style="font-size:2.2rem; color:#4b4b4b;")
+              p.fw-semibold.mt-3.mb-4= juego.instruccion
 
-        .d-grid.gap-3
-          each opcion in juego.opciones
-            button.btn.btn-outline-success.btn-lg.rounded-pill(
+            .d-grid.gap-3.lesson-options
+              each opcion in juego.opciones
+                button.btn.btn-outline-success.btn-lg.rounded-pill.py-3(
+                  type="button"
+                  data-option
+                  data-correct=opcion.correcta ? 'true' : 'false'
+                )= opcion.texto
+
+            .mt-3(data-feedback)
+
+            button.btn.btn-outline-secondary.w-100.rounded-pill.mt-3.py-3.d-none(
               type="button"
-              data-option
-              data-correct=opcion.correcta ? 'true' : 'false'
-            )= opcion.texto
+              data-retry-button
+            ) Intentar de nuevo
 
-        .mt-3(data-feedback)
+        else if tipo === 'input' && juego
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card.lesson-game-card(
+            style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;"
+            data-minigame="input"
+          )
+            .text-center
+              i.bi.bi-pencil-square(style="font-size:2.2rem; color:#4b4b4b;")
+              p.fw-semibold.mt-3.mb-4= juego.instruccion
 
-        button.btn.btn-outline-secondary.w-100.rounded-pill.mt-2.d-none(
-          type="button"
-          data-retry-button
-        ) Intentar de nuevo
+            input.form-control.form-control-lg.rounded-pill.mb-3.py-3(
+              type="text"
+              placeholder=juego.placeholder
+              data-input-answer
+            )
 
-    else if tipo === 'input' && juego
-      .card.border-0.shadow-sm.p-4.mb-3(
-        style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;"
-        data-minigame="input"
-      )
-        .text-center
-          i.bi.bi-pencil-square(style="font-size:2rem; color:#4b4b4b;")
-          p.fw-semibold.mt-2.mb-4= juego.instruccion
+            button.btn.btn-outline-primary.w-100.rounded-pill.py-3(
+              type="button"
+              data-check-input
+              data-correct-answer=juego.respuestaCorrecta
+            )= juego.botonTexto || 'Comprobar'
 
-        input.form-control.form-control-lg.rounded-pill.mb-3(
-          type="text"
-          placeholder=juego.placeholder
-          data-input-answer
-        )
+            .mt-3(data-feedback)
 
-        button.btn.btn-outline-primary.w-100.rounded-pill(
-          type="button"
-          data-check-input
-          data-correct-answer=juego.respuestaCorrecta
-        )= juego.botonTexto || 'Comprobar'
+            button.btn.btn-outline-secondary.w-100.rounded-pill.mt-3.py-3.d-none(
+              type="button"
+              data-retry-input
+            ) Intentar de nuevo
 
-        .mt-3(data-feedback)
+        else
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;")
+            .text-center
+              i.bi.bi-grid-3x3-gap-fill(style="font-size:2.2rem; color:#4b4b4b;")
+              p.fw-semibold.mt-3.mb-0= simulacion
 
-        button.btn.btn-outline-secondary.w-100.rounded-pill.mt-2.d-none(
-          type="button"
-          data-retry-input
-        ) Intentar de nuevo
-
-    else
-      .card.border-0.shadow-sm.p-4.mb-3(style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;")
-        .text-center
-          i.bi.bi-grid-3x3-gap-fill(style="font-size:2rem; color:#4b4b4b;")
-          p.fw-semibold.mt-2.mb-0= simulacion
-
-    a.btn.btn-success.w-100.rounded-pill.py-3.fw-bold(
-      href=nextHref
-      data-next-button
-    ) Realizar acción
+        a.btn.btn-success.w-100.rounded-pill.py-3.fw-bold.mt-2.lesson-next-btn(
+          href=nextHref
+          data-next-button
+          style=`background:${themeColor || '#25D366'}; border-color:${themeColor || '#25D366'};`
+        ) Realizar acción
 
 block scripts
   script(src="/javascripts/minijuegos.js")

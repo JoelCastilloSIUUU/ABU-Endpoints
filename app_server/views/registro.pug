@@ -3,32 +3,56 @@ extends layout
 block content
   .container-fluid.bg-white(style="min-height: 100dvh; padding: 0;")
     .row.justify-content-center.m-0
-      .col-12.col-md-6.col-lg-4.p-4.text-center
+      .col-12.col-md-8.col-lg-6.p-4.text-center
         
         .mt-5.mb-4
-          .mx-auto.rounded-circle.d-flex.justify-content-center.align-items-center.mb-3(style="width: 100px; height: 100px; background-color: #FF8C00;")
-            i.bi.bi-person-plus-fill.text-white(style="font-size: 3.5rem;")
+          .mx-auto.rounded-circle.d-flex.justify-content-center.align-items-center.mb-4(style="width: 120px; height: 120px; background-color: #FF8C00;")
+            i.bi.bi-person-plus-fill.text-white(style="font-size: 4rem;")
           
-          h1.fw-bold(style="color: #D35400; font-size: 2.2rem;")= title
-          p.text-muted(style="font-size: 1.1rem;")= subtitle
+          h1.fw-bold(style="color: #D35400; font-size: 2.5rem; line-height: 1.2;")= title
+          p.text-muted.mx-auto(style="font-size: 1.3rem; max-width: 520px; line-height: 1.6;")= subtitle
         
         if error
-          .alert.alert-danger.mt-3= error
+          .alert.alert-danger.mt-4.text-start= error
 
         form.text-start.mt-5(action="/register", method="post", role="form")
           .mb-4
-            label.form-label.fw-bold.text-secondary(for='name') Tu nombre
-            input#name.form-control.form-control-lg(type='text', name="nombre", placeholder='Escribe tu nombre', required, style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 15px;")
+            label.form-label.fw-bold.text-secondary(for='name' style="font-size: 1.2rem;") Tu nombre
+            input#name.form-control.form-control-lg(
+              type='text',
+              name="nombre",
+              placeholder='Escribe tu nombre',
+              required,
+              style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 18px;"
+            )
           
           .mb-4
-            label.form-label.fw-bold.text-secondary(for='email') Correo electrónico
-            input#email.form-control.form-control-lg(type='email', name="email", placeholder='Escribe tu email', required, style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 15px;")
+            label.form-label.fw-bold.text-secondary(for='email' style="font-size: 1.2rem;") Correo electrónico
+            input#email.form-control.form-control-lg(
+              type='email',
+              name="email",
+              placeholder='Escribe tu email',
+              required,
+              style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 18px;"
+            )
 
           .mb-5
-            label.form-label.fw-bold.text-secondary(for='password') Contraseña
-            input#password.form-control.form-control-lg(type='password', name="password", placeholder='Escribe tu contraseña', required, style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 15px;")
+            label.form-label.fw-bold.text-secondary(for='password' style="font-size: 1.2rem;") Contraseña
+            input#password.form-control.form-control-lg(
+              type='password',
+              name="password",
+              placeholder='Escribe tu contraseña',
+              required,
+              style="border-radius: 1rem; border: 2px solid #FF8C00; padding: 18px;"
+            )
         
-          button.btn.btn-lg.w-100.text-white.fw-bold.shadow-sm(type='submit', style="background-color: #FF8C00; border-radius: 1rem; padding: 15px; font-size: 1.2rem;")= botonPrincipal
+          button.btn.btn-lg.w-100.text-white.fw-bold.shadow-sm(
+            type='submit',
+            style="background-color: #FF8C00; border-radius: 1rem; padding: 18px; font-size: 1.3rem;"
+          )= botonPrincipal
         
         .mt-auto.pb-4
-          a.d-block.mt-5.text-decoration-none.fw-bold(href="/", style="color: #FF4500; font-size: 1rem;")= loginTexto
+          a.d-block.mt-5.text-decoration-none.fw-bold(
+            href="/",
+            style="color: #FF4500; font-size: 1.15rem;"
+          )= loginTexto
