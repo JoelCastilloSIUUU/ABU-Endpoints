@@ -1,0 +1,40 @@
+extends layout
+
+block content
+  .container.py-5
+    .row.justify-content-center
+      .col-lg-9
+        .card.border-0.shadow-sm.p-4(style="border-radius:20px;")
+          h2.fw-bold.mb-4 Crear curso nuevo
+
+          form#cursoForm
+            input(type="hidden", id="userId", value=userid)
+            input(type="hidden", id="userNombre", value=userNombre)
+
+            .mb-3
+              label.form-label Nombre del curso
+              input.form-control(type="text", id="nombreCurso", required)
+
+            .mb-3
+              label.form-label Descripción
+              textarea.form-control(id="descripcionCurso", rows="3")
+
+            .row
+              .col-md-6.mb-3
+                label.form-label Color
+                input.form-control.form-control-color(type="color", id="colorCurso", value="#FF8C00")
+              .col-md-6.mb-3
+                label.form-label Icono Bootstrap
+                input.form-control(type="text", id="iconoCurso", placeholder="bi-bookmark-fill", value="bi-bookmark-fill")
+
+            hr
+            h4.fw-bold.mt-4 Ejercicios
+            #ejerciciosContainer
+
+            .d-flex.gap-2.mt-3.flex-wrap
+              button.btn.btn-outline-secondary(type="button", id="addEjercicioBtn") + Agregar ejercicio
+              button.btn.btn-warning.text-white(type="submit") Guardar curso
+              a.btn.btn-light(href=`/principal?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`) Volver
+
+block scripts
+  script(src="/javascripts/crear-curso.js")

@@ -5,10 +5,8 @@ const ctrlMain = require('../controllers/main');
 const ctrlAuth = require('../controllers/auth');
 const ctrlContenidos = require('../controllers/contenidos');
 
-// Módulos permitidos
 const modulosPermitidos = ['whatsapp', 'youtube', 'camara', 'llamadas'];
 
-// Middleware para validar el parámetro :modulo
 function validarModulo(req, res, next) {
   const { modulo } = req.params;
 
@@ -29,7 +27,13 @@ router.post('/principal/cursos', ctrlContenidos.addCursoPersonalizado);
 router.post('/principal/cursos/:cursoid/delete', ctrlContenidos.deleteCursoPersonalizado);
 router.post('/principal/cursos/:cursoid/resenas', ctrlContenidos.crearResenaCurso);
 
-// Rutas de módulos
+router.get('/cursos/nuevo', ctrlContenidos.formCrearCurso);
+router.post('/cursos/nuevo', ctrlContenidos.crearCursoDinamico);
+router.get('/cursos/:cursoid', ctrlContenidos.dynamicCourseHome);
+router.get('/cursos/:cursoid/:exerciseId', ctrlContenidos.dynamicCourseExercise);
+router.get('/cursos/:cursoid/:exerciseId/paso/:n', ctrlContenidos.dynamicCoursePaso);
+router.get('/cursos/:cursoid/:exerciseId/completado', ctrlContenidos.dynamicCourseCompletado);
+
 router.get('/:modulo', validarModulo, ctrlContenidos.moduleHome);
 router.get('/:modulo/:exerciseId', validarModulo, ctrlContenidos.moduleExercise);
 router.get('/:modulo/:exerciseId/paso/:n', validarModulo, ctrlContenidos.moduleExercisePaso);

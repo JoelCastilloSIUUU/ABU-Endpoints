@@ -851,10 +851,18 @@ const principal = async (req, res) => {
   if (userid) {
     try {
       const userData = await fetchUserAndReviews(req, userid);
-      cursosActivos = userData.cursosActivos.map((curso) => ({
-        ...curso,
-        meta: COURSE_META[curso.nombreCurso] || { color: '#FF8C00', icono: 'bi-bookmark-fill' }
-      }));
+      cursosActivos = userData.cursosActivos.map((curso) => {
+        const isDynamic = !COURSE_META[curso.nombreCurso];
+        const href = isDynamic
+          ? `/cursos/${curso.cursoId}?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`
+          : `/${(curso.nombreCurso || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-') }?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`;
+
+        return {
+          ...curso,
+          href,
+          meta: COURSE_META[curso.nombreCurso] || { color: '#FF8C00', icono: 'bi-bookmark-fill' }
+        };
+      });
       reviewsByCourse = userData.reviewsByCourse;
 
       const completedModules = countCompletedModules(userData.usuario?.progresoModulos || {});
@@ -1091,6 +1099,266 @@ async function moduleExerciseCompletado(req, res) {
   });
 }
 
+
+async function fetchDynamicCourse(req, cursoid) {
+  const response = await axios.get(`${getApiBase(req)}/cursos/${cursoid}`);
+  return response.data;
+}
+
+async function fetchDynamicCourseProgress(req, userid, cursoid) {
+  if (!userid) {
+    return {
+      ejerciciosCompletados: [],
+      porcentaje: 0,
+      completado: false
+    };
+  }
+
+  try {
+    const response = await axios.get(`${getApiBase(req)}/users/${userid}/progreso/cursos/${cursoid}`);
+    return response.data.progreso || {
+      ejerciciosCompletados: [],
+      porcentaje: 0,
+      completado: false
+    };
+  } catch (_err) {
+    return {
+      ejerciciosCompletados: [],
+      porcentaje: 0,
+      completado: false
+    };
+  }
+}
+
+function mapDynamicCourseToViewModel(courseDoc) {
+  return {
+    _id: courseDoc._id,
+    slug: `cursos/${courseDoc._id}`,
+    nombre: courseDoc.nombre,
+    color: courseDoc.color_hex || '#FF8C00',
+    accent: '#D35400',
+    light: '#FFF5E6',
+    icono: courseDoc.icono || 'bi-bookmark-fill',
+    ejercicios: (courseDoc.ejercicios || [])
+      .sort((a, b) => a.orden - b.orden)
+      .map((e) => ({
+        id: String(e._id),
+        nombre: e.titulo,
+        desc: e.descripcion || e.pregunta,
+        pasos: [
+          {
+            titulo: e.titulo,
+            accion: e.pregunta,
+            simulacion: 'Completa el ejercicio correctamente',
+            tipo: e.tipo === 'multiple' ? 'tap' : 'input',
+            juego: e.tipo === 'multiple'
+              ? {
+                  instruccion: e.pregunta,
+                  opciones: (e.opciones || []).map((op) => ({
+                    texto: op.texto,
+                    correcta: op.texto === e.respuestaCorrecta
+                  }))
+                }
+              : {
+                  instruccion: e.pregunta,
+                  placeholder: 'Escribe tu respuesta',
+                  respuestaCorrecta: e.respuestaCorrecta,
+                  botonTexto: 'Comprobar'
+                }
+          }
+        ]
+      }))
+  };
+}
+
+const formCrearCurso = (req, res) => {
+  const nombre = req.query.nombre || 'Usuario';
+  const userid = req.query.userid || '';
+
+  if (!userid) {
+    return res.redirect('/?error=Debes iniciar sesión');
+  }
+
+  res.render('crear_curso', {
+    title: 'Crear curso',
+    userid,
+    userNombre: nombre
+  });
+};
+
+const crearCursoDinamico = async (req, res) => {
+  try {
+    const payload = req.body;
+    const response = await axios.post(`${getApiBase(req)}/cursos`, payload);
+    res.status(201).json(response.data);
+  } catch (err) {
+    res.status(err.response?.status || 500).json({
+      mensaje: err.response?.data?.mensaje || 'No se pudo crear el curso'
+    });
+  }
+};
+
+async function dynamicCourseHome(req, res) {
+  const { nombre, userid, userQuery } = getUserContext(req);
+  const { cursoid } = req.params;
+
+  try {
+    const courseDoc = await fetchDynamicCourse(req, cursoid);
+    const course = mapDynamicCourseToViewModel(courseDoc);
+    const progress = await fetchDynamicCourseProgress(req, userid, cursoid);
+
+    const completedIds = (progress.ejerciciosCompletados || []).map(String);
+    const completedCount = completedIds.length;
+
+    const ejercicios = course.ejercicios.map((ejercicio, index) => {
+      const isCompleted = completedIds.includes(String(ejercicio.id));
+      const isUnlocked = index <= completedCount;
+
+      return {
+        key: ejercicio.id,
+        orden: index + 1,
+        nombre: ejercicio.nombre,
+        desc: ejercicio.desc,
+        href: isUnlocked ? `/${course.slug}/${ejercicio.id}?${userQuery}` : '#',
+        completed: isCompleted,
+        locked: !isUnlocked
+      };
+    });
+
+    res.render('whatsapp', {
+      title: course.nombre,
+      completedCount,
+      totalCount: course.ejercicios.length,
+      nombre,
+      userid,
+      volverHref: `/principal?${userQuery}`,
+      ejercicios,
+      themeColor: course.color,
+      themeAccent: course.accent,
+      themeLight: course.light,
+      themeIcon: course.icono
+    });
+  } catch (err) {
+    res.redirect(`/principal?${userQuery}&error=${encodeURIComponent('No se pudo abrir el curso dinámico')}`);
+  }
+}
+
+async function dynamicCourseExercise(req, res) {
+  const { userQuery } = getUserContext(req);
+  const { cursoid, exerciseId } = req.params;
+
+  try {
+    const courseDoc = await fetchDynamicCourse(req, cursoid);
+    const course = mapDynamicCourseToViewModel(courseDoc);
+    const exercise = course.ejercicios.find((e) => String(e.id) === String(exerciseId));
+
+    if (!exercise) {
+      return res.redirect(`/${course.slug}?${userQuery}`);
+    }
+
+    res.render('whatsapp_agregar_contacto', {
+      title: exercise.nombre,
+      modulo: course.nombre,
+      totalPasos: exercise.pasos.length,
+      volverHref: `/${course.slug}?${userQuery}`,
+      comenzarHref: `/${course.slug}/${exercise.id}/paso/1?${userQuery}`,
+      themeColor: course.color,
+      themeAccent: course.accent,
+      themeLight: course.light,
+      themeIcon: course.icono
+    });
+  } catch (_err) {
+    res.redirect(`/principal?${userQuery}`);
+  }
+}
+
+async function dynamicCoursePaso(req, res) {
+  const { userQuery } = getUserContext(req);
+  const { cursoid, exerciseId } = req.params;
+  const paso = Number(req.params.n);
+
+  try {
+    const courseDoc = await fetchDynamicCourse(req, cursoid);
+    const course = mapDynamicCourseToViewModel(courseDoc);
+    const exercise = course.ejercicios.find((e) => String(e.id) === String(exerciseId));
+
+    if (!exercise) {
+      return res.redirect(`/${course.slug}?${userQuery}`);
+    }
+
+    const totalPasos = exercise.pasos.length;
+    const currentStep = exercise.pasos[paso - 1];
+
+    if (!currentStep) {
+      return res.redirect(`/${course.slug}/${exercise.id}?${userQuery}`);
+    }
+
+    const nextHref = paso < totalPasos
+      ? `/${course.slug}/${exercise.id}/paso/${paso + 1}?${userQuery}`
+      : `/${course.slug}/${exercise.id}/completado?${userQuery}`;
+
+    res.render('whatsapp_agregar_contacto_paso', {
+      title: exercise.nombre,
+      modulo: course.nombre,
+      paso,
+      totalPasos,
+      progressText: `${paso}/${totalPasos}`,
+      volverHref: `/${course.slug}/${exercise.id}?${userQuery}`,
+      titulo: currentStep.titulo,
+      instruccion: 'Ahora vas a: ',
+      accion: currentStep.accion,
+      simulacion: currentStep.simulacion,
+      tipo: currentStep.tipo || 'info',
+      juego: currentStep.juego || null,
+      explicacion: currentStep.explicacion || null,
+      imagenRuta: currentStep.imagenRuta || null,
+      imagenAlt: currentStep.imagenAlt || 'Imagen de apoyo del minijuego',
+      nextHref,
+      themeColor: course.color,
+      themeAccent: course.accent,
+      themeLight: course.light,
+      themeIcon: course.icono
+    });
+  } catch (_err) {
+    res.redirect(`/principal?${userQuery}`);
+  }
+}
+
+async function dynamicCourseCompletado(req, res) {
+  const { userid, userQuery } = getUserContext(req);
+  const { cursoid, exerciseId } = req.params;
+
+  try {
+    const courseDoc = await fetchDynamicCourse(req, cursoid);
+    const course = mapDynamicCourseToViewModel(courseDoc);
+    const exercise = course.ejercicios.find((e) => String(e.id) === String(exerciseId));
+
+    if (!exercise) {
+      return res.redirect(`/${course.slug}?${userQuery}`);
+    }
+
+    if (userid) {
+      try {
+        await axios.post(`${getApiBase(req)}/users/${userid}/progreso/cursos/${cursoid}/${exercise.id}`);
+      } catch (_err) {
+      }
+    }
+
+    res.render('whatsapp_agregar_contacto_completado', {
+      title: exercise.nombre,
+      modulo: course.nombre,
+      continuarHref: `/${course.slug}?${userQuery}`,
+      volverHref: `/${course.slug}?${userQuery}`,
+      themeColor: course.color,
+      themeAccent: course.accent,
+      themeLight: course.light,
+      themeIcon: course.icono
+    });
+  } catch (_err) {
+    res.redirect(`/principal?${userQuery}`);
+  }
+}
+
 module.exports = {
   principal,
   whatsapp: moduleHome,
@@ -1103,5 +1371,11 @@ module.exports = {
   moduleExerciseCompletado,
   addCursoPersonalizado,
   deleteCursoPersonalizado,
-  crearResenaCurso
+  crearResenaCurso,
+  formCrearCurso,
+  crearCursoDinamico,
+  dynamicCourseHome,
+  dynamicCourseExercise,
+  dynamicCoursePaso,
+  dynamicCourseCompletado
 };

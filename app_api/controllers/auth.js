@@ -55,6 +55,43 @@ const countCompletedModules = (progresoModulos = {}) => {
   return VALID_MODULES.filter((modulo) => progresoModulos?.[modulo]?.completado).length;
 };
 
+const ensureCourseProgress = (usuario, cursoId, totalEjercicios = 0) => {
+  if (!Array.isArray(usuario.progresoCursos)) {
+    usuario.progresoCursos = [];
+  }
+
+  let item = usuario.progresoCursos.find(
+    (p) => String(p.cursoId) === String(cursoId)
+  );
+
+  if (!item) {
+    item = {
+      cursoId,
+      ejerciciosCompletados: [],
+      ultimoEjercicioId: null,
+      porcentaje: 0,
+      completado: false,
+      actualizadoEn: new Date()
+    };
+    usuario.progresoCursos.push(item);
+    item = usuario.progresoCursos[usuario.progresoCursos.length - 1];
+  }
+
+  if (!Array.isArray(item.ejerciciosCompletados)) {
+    item.ejerciciosCompletados = [];
+  }
+
+  item.porcentaje = totalEjercicios
+    ? Math.round((item.ejerciciosCompletados.length / totalEjercicios) * 100)
+    : 0;
+
+  item.completado = totalEjercicios > 0 && item.ejerciciosCompletados.length >= totalEjercicios;
+  item.actualizadoEn = new Date();
+
+  return item;
+};
+
+
 const registro = async (req, res) => {
   const { nombre, email, password } = req.body;
 
@@ -338,6 +375,87 @@ const usuarioCompletarEjercicioModulo = async (req, res) => {
   }
 };
 
+
+const usuarioLeerProgresoCurso = async (req, res) => {
+  try {
+    const usuario = await Usuario.findById(req.params.userid);
+    const curso = await Curso.findById(req.params.cursoid).lean();
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    const progreso = ensureCourseProgress(usuario, curso._id, curso.ejercicios.length);
+
+    res.status(200).json({
+      cursoId: curso._id,
+      progreso
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al leer progreso del curso', error: err.message });
+  }
+};
+
+const usuarioCompletarEjercicioCurso = async (req, res) => {
+  try {
+    const { userid, cursoid, ejercicioid } = req.params;
+
+    const usuario = await Usuario.findById(userid);
+    const curso = await Curso.findById(cursoid);
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    const ejercicioExiste = curso.ejercicios.some(
+      (e) => String(e._id) === String(ejercicioid)
+    );
+
+    if (!ejercicioExiste) {
+      return res.status(404).json({ mensaje: 'Ejercicio no encontrado' });
+    }
+
+    const progreso = ensureCourseProgress(usuario, curso._id, curso.ejercicios.length);
+    const yaCompletado = progreso.ejerciciosCompletados.some(
+      (id) => String(id) === String(ejercicioid)
+    );
+
+    if (!yaCompletado) {
+      progreso.ejerciciosCompletados.push(ejercicioid);
+    }
+
+    progreso.ultimoEjercicioId = ejercicioid;
+    progreso.porcentaje = Math.round((progreso.ejerciciosCompletados.length / curso.ejercicios.length) * 100);
+    progreso.completado = progreso.ejerciciosCompletados.length >= curso.ejercicios.length;
+    progreso.actualizadoEn = new Date();
+
+    const enrolado = usuario.cursosEnrolados.find(
+      (c) => String(c.cursoId) === String(curso._id)
+    );
+
+    if (enrolado) {
+      enrolado.progreso = progreso.porcentaje;
+    }
+
+    await usuario.save();
+
+    res.status(200).json({
+      mensaje: 'Progreso del curso actualizado',
+      progreso
+    });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al guardar progreso del curso', error: err.message });
+  }
+};
+
 module.exports = {
   registro,
   login,
@@ -348,5 +466,7 @@ module.exports = {
   usuarioActualizarProgreso,
   usuarioEliminarCurso,
   usuarioLeerProgresoModulo,
-  usuarioCompletarEjercicioModulo
+  usuarioCompletarEjercicioModulo,
+  usuarioLeerProgresoCurso,
+  usuarioCompletarEjercicioCurso
 };

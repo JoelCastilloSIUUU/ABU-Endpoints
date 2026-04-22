@@ -19,9 +19,10 @@ router.put('/users/:userid/cursos/:cursoid', ctrlAuth.usuarioActualizarProgreso)
 router.delete('/users/:userid/cursos/:cursoid', ctrlAuth.usuarioEliminarCurso);
 router.post('/users/:userid/cursos/:cursoid/delete', ctrlAuth.usuarioEliminarCurso);
 
-/* 🔥 NUEVAS RUTAS DE PROGRESO POR MÓDULO */
 router.get('/users/:userid/progreso/:modulo', ctrlAuth.usuarioLeerProgresoModulo);
 router.post('/users/:userid/progreso/:modulo/:ejercicioid', ctrlAuth.usuarioCompletarEjercicioModulo);
+router.get('/users/:userid/progreso/cursos/:cursoid', ctrlAuth.usuarioLeerProgresoCurso);
+router.post('/users/:userid/progreso/cursos/:cursoid/:ejercicioid', ctrlAuth.usuarioCompletarEjercicioCurso);
 
 router
   .route('/cursos')
@@ -33,6 +34,8 @@ router
   .get(ctrlCursos.cursosLeerUno)
   .put(ctrlCursos.cursosActualizar)
   .delete(ctrlCursos.cursosBorrar);
+
+router.post('/cursos/:cursoid/ejercicios/:ejercicioid/validar', ctrlCursos.validarRespuesta);
 
 router
   .route('/cursos/:cursoid/resenas')

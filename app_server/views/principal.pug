@@ -51,6 +51,21 @@ block content
                       h4.fw-bold.mb-2.text-dark(style="font-size: 1.4rem;")= modulo.nombre
                       p.text-muted.m-0(style="font-size: 1.08rem; line-height: 1.5;")= modulo.desc
 
+        .row.mb-4.mt-4
+          .col-12
+            .card.border-0.shadow-sm.p-4(style="border-radius: 20px;")
+              .d-flex.justify-content-between.align-items-center.flex-wrap.gap-3
+                div
+                  h3.fw-bold.mb-2(style="color:#2C3E50;") Crear un curso propio
+                  p.text-muted.mb-0 Diseña tus propios ejercicios y guárdalos en la plataforma.
+                if userid
+                  a.btn.text-white.fw-bold(
+                    href=`/cursos/nuevo?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`,
+                    style="background-color:#FF8C00; border-radius:14px; padding: 14px 20px;"
+                  ) Crear curso
+                else
+                  span.text-muted Inicia sesión para crear cursos
+
         .mt-5.pb-5.management-section
           h3.fw-bold.mb-3(style="color: #2C3E50; font-size: 1.5rem;") Administrar mis cursos
 
@@ -59,7 +74,7 @@ block content
               .card.border-0.shadow-sm.mb-4(style="border-radius: 20px; border: 2px dashed #FF8C00; background-color: #FFF5E6;")
                 .p-4.text-center
                   i.bi.bi-plus-circle-fill.mb-3(style="font-size: 2.8rem; color: #FF8C00;")
-                  h4.fw-bold.text-dark(style="font-size: 1.35rem;") Crear curso personalizado
+                  h4.fw-bold.text-dark(style="font-size: 1.35rem;") Añadir curso existente
 
                   form.mt-3(action="/principal/cursos", method="post")
                     input(type="hidden", name="userId", value=userid)
@@ -93,7 +108,7 @@ block content
                             )
                               i.bi(class=item.meta.icono, style="color: white; font-size: 1.4rem;")
                             .me-3
-                              span.fw-bold.text-dark.d-block(style="font-size: 1.2rem;")= item.nombreCurso
+                              a.fw-bold.text-dark.d-block.text-decoration-none(style="font-size: 1.2rem;" href=item.href)= item.nombreCurso
                               span.text-muted(style="font-size: 1.05rem;") Progreso: #{item.progreso || 0}%
                           form(action=`/principal/cursos/${item.cursoId}/delete`, method="post")
                             input(type="hidden", name="userId", value=userid)
