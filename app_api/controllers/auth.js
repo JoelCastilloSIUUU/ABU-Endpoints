@@ -204,9 +204,9 @@ const usuarioBorrar = async (req, res) => {
 };
 
 const usuarioInscribirCurso = async (req, res) => {
-  const { nombreCurso } = req.body;
+  const { nombreCurso, cursoId } = req.body;
 
-  if (!nombreCurso) {
+  if (!nombreCurso && !cursoId) {
     return res.status(400).json({ mensaje: 'Debes seleccionar un curso para añadir' });
   }
 
@@ -217,12 +217,35 @@ const usuarioInscribirCurso = async (req, res) => {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    let curso = await Curso.findOne({ nombre: nombreCurso });
-    if (!curso) {
-      curso = await Curso.create({ nombre: nombreCurso, ...getCourseDefaults(nombreCurso) });
+    let curso = null;
+
+    if (cursoId) {
+      if (!mongoose.Types.ObjectId.isValid(cursoId)) {
+        return res.status(400).json({ mensaje: 'ID de curso no válido' });
+      }
+
+      curso = await Curso.findById(cursoId);
+    } else {
+      curso = await Curso.findOne({ nombre: nombreCurso });
+
+      if (!curso) {
+        curso = await Curso.create({
+          nombre: nombreCurso,
+          ...getCourseDefaults(nombreCurso),
+          origen: 'static',
+          creador: null
+        });
+      }
     }
 
-    const yaExiste = usuario.cursosEnrolados.some((c) => String(c.cursoId) === String(curso._id));
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    const yaExiste = usuario.cursosEnrolados.some(
+      (c) => String(c.cursoId) === String(curso._id)
+    );
+
     if (yaExiste) {
       return res.status(409).json({ mensaje: 'Ese curso ya está en tu lista personalizada' });
     }

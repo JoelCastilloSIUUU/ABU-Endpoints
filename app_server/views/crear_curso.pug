@@ -5,7 +5,7 @@ block content
     .row.justify-content-center
       .col-lg-9
         .card.border-0.shadow-sm.p-4(style="border-radius:20px;")
-          h2.fw-bold.mb-4 Crear curso nuevo
+          h2.fw-bold.mb-4= modoEdicion ? 'Editar curso' : 'Crear curso nuevo'
 
           form#cursoForm
             input(type="hidden", id="userId", value=userid)
@@ -23,9 +23,38 @@ block content
               .col-md-6.mb-3
                 label.form-label Color
                 input.form-control.form-control-color(type="color", id="colorCurso", value="#FF8C00")
+
               .col-md-6.mb-3
-                label.form-label Icono Bootstrap
-                input.form-control(type="text", id="iconoCurso", placeholder="bi-bookmark-fill", value="bi-bookmark-fill")
+                label.form-label Icono del curso
+                input(type="hidden", id="iconoCurso", value="bi-bookmark-fill")
+
+                .d-flex.flex-wrap.gap-2.mt-2.icon-picker
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-bookmark-fill", title="Marcador")
+                    i.bi.bi-bookmark-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-play-btn-fill", title="Video")
+                    i.bi.bi-play-btn-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-phone-fill", title="Celular")
+                    i.bi.bi-phone-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-chat-left-text-fill", title="Chat")
+                    i.bi.bi-chat-left-text-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-camera-fill", title="Cámara")
+                    i.bi.bi-camera-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-globe", title="Internet")
+                    i.bi.bi-globe(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-gear-fill", title="Ajustes")
+                    i.bi.bi-gear-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-star-fill", title="Favorito")
+                    i.bi.bi-star-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-mortarboard-fill", title="Educación")
+                    i.bi.bi-mortarboard-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-lightbulb-fill", title="Idea")
+                    i.bi.bi-lightbulb-fill(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-music-note-beamed", title="Música")
+                    i.bi.bi-music-note-beamed(style="font-size:1.5rem;")
+                  button.btn.btn-light.border.icon-option(type="button", data-icon="bi-heart-fill", title="Salud")
+                    i.bi.bi-heart-fill(style="font-size:1.5rem;")
+
+                small.text-muted.d-block.mt-2 Selecciona un ícono para identificar tu curso.
 
             hr
             h4.fw-bold.mt-4 Ejercicios
@@ -33,8 +62,11 @@ block content
 
             .d-flex.gap-2.mt-3.flex-wrap
               button.btn.btn-outline-secondary(type="button", id="addEjercicioBtn") + Agregar ejercicio
-              button.btn.btn-warning.text-white(type="submit") Guardar curso
+              button.btn.btn-warning.text-white(type="submit")= modoEdicion ? 'Guardar cambios' : 'Guardar curso'
               a.btn.btn-light(href=`/principal?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`) Volver
 
 block scripts
+  script.
+    window.CURSO_INITIAL_DATA = !{JSON.stringify(curso || null)};
+    window.CURSO_MODO_EDICION = !{JSON.stringify(modoEdicion || false)};
   script(src="/javascripts/crear-curso.js")

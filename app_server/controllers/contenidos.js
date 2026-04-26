@@ -1,4 +1,3 @@
-
 const axios = require('axios');
 
 const TOTAL_MODULOS = 6;
@@ -209,6 +208,7 @@ const cursos = {
       }
     ]
   },
+
   youtube: {
     slug: 'youtube',
     nombre: 'YouTube',
@@ -327,7 +327,7 @@ const cursos = {
               opciones: [
                 { texto: 'Miniatura del video', correcta: true },
                 { texto: 'Botón de apagar', correcta: false },
-                { texto: 'Wi‑Fi', correcta: false }
+                { texto: 'Wi-Fi', correcta: false }
               ]
             }
           }
@@ -390,6 +390,7 @@ const cursos = {
       }
     ]
   },
+
   camara: {
     slug: 'camara',
     nombre: 'Cámara',
@@ -569,6 +570,7 @@ const cursos = {
       }
     ]
   },
+
   llamadas: {
     slug: 'llamadas',
     nombre: 'Llamadas',
@@ -722,7 +724,7 @@ const cursos = {
               opciones: [
                 { texto: 'María', correcta: true },
                 { texto: 'Linterna', correcta: false },
-                { texto: 'Wi‑Fi', correcta: false }
+                { texto: 'Wi-Fi', correcta: false }
               ]
             }
           },
@@ -781,7 +783,6 @@ const getUserContext = (req) => {
   };
 };
 
-
 const resolveModulo = (req) => req.params.modulo || req.path.split('/').filter(Boolean)[0] || '';
 
 const getCourseData = (courseSlug) => cursos[courseSlug] || null;
@@ -837,6 +838,70 @@ async function fetchModuleProgress(req, userId, modulo) {
   }
 }
 
+function normalizeSlug(value = '') {
+  return String(value)
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function buildManagedCourse(curso, userNombre, userid) {
+  const cursoId = curso.cursoId || curso._id;
+  const nombreCurso = curso.nombreCurso || curso.nombre || 'Curso personalizado';
+  const isDynamic = !COURSE_META[nombreCurso];
+
+  const href = isDynamic
+    ? `/cursos/${cursoId}?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}`
+    : `/${normalizeSlug(nombreCurso)}?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}`;
+
+  return {
+    ...curso,
+    cursoId,
+    nombreCurso,
+    progreso: curso.progreso || 0,
+    href,
+    meta: COURSE_META[nombreCurso] || {
+      color: curso.color_hex || curso.color || '#FF8C00',
+      icono: curso.icono || 'bi-bookmark-fill'
+    }
+  };
+}
+
+function mapCreatedCourseCard(curso, userNombre, userid) {
+  return {
+    cursoId: curso._id || curso.cursoId,
+    nombre: curso.nombre || curso.nombreCurso || 'Curso personalizado',
+    desc: curso.descripcion || curso.desc || 'Curso personalizado creado por ti',
+    color: curso.color_hex || curso.color || '#FF8C00',
+    icono: curso.icono || 'bi-bookmark-fill',
+    slug: `cursos/${curso._id || curso.cursoId}`,
+    href: `/cursos/${curso._id || curso.cursoId}?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}`
+  };
+}
+
+async function fetchCreatedCourses(req, userId) {
+  if (!userId) return [];
+
+  try {
+    const response = await axios.get(`${getApiBase(req)}/cursos`, {
+      params: {
+        creador: userId,
+        origen: 'dynamic'
+      }
+    });
+
+    if (Array.isArray(response.data)) return response.data;
+    if (Array.isArray(response.data?.cursos)) return response.data.cursos;
+    if (Array.isArray(response.data?.data)) return response.data.data;
+
+    return [];
+  } catch (_err) {
+    return [];
+  }
+}
+
 const principal = async (req, res) => {
   const nombre = req.query.nombre || 'Usuario';
   const userid = req.query.userid || '';
@@ -845,25 +910,39 @@ const principal = async (req, res) => {
   const error = req.query.error || '';
 
   let cursosActivos = [];
+  let cursosCreados = [];
+  let cursosDisponibles = [];
   let reviewsByCourse = {};
   let progeso = `0/${TOTAL_MODULOS}`;
 
   if (userid) {
     try {
       const userData = await fetchUserAndReviews(req, userid);
-      cursosActivos = userData.cursosActivos.map((curso) => {
-        const isDynamic = !COURSE_META[curso.nombreCurso];
-        const href = isDynamic
-          ? `/cursos/${curso.cursoId}?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`
-          : `/${(curso.nombreCurso || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-') }?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`;
+      const createdCourses = await fetchCreatedCourses(req, userid);
 
-        return {
-          ...curso,
-          href,
-          meta: COURSE_META[curso.nombreCurso] || { color: '#FF8C00', icono: 'bi-bookmark-fill' }
-        };
-      });
-      reviewsByCourse = userData.reviewsByCourse;
+      cursosActivos = (userData.cursosActivos || []).map((curso) =>
+        buildManagedCourse(curso, userNombre, userid)
+      );
+
+      cursosCreados = (createdCourses || []).map((curso) =>
+        mapCreatedCourseCard(curso, userNombre, userid)
+      );
+
+      cursosDisponibles = [
+        ...learningModules.map((modulo) => ({
+          tipo: 'static',
+          nombreCurso: modulo.nombre,
+          label: modulo.nombre
+        })),
+        ...cursosCreados.map((curso) => ({
+          tipo: 'dynamic',
+          cursoId: curso.cursoId,
+          nombreCurso: curso.nombre,
+          label: curso.nombre
+        }))
+      ];
+
+      reviewsByCourse = userData.reviewsByCourse || {};
 
       const completedModules = countCompletedModules(userData.usuario?.progresoModulos || {});
       progeso = `${completedModules}/${TOTAL_MODULOS}`;
@@ -878,6 +957,8 @@ const principal = async (req, res) => {
         userid,
         userNombre,
         cursosActivos: [],
+        cursosCreados: [],
+        cursosDisponibles: [],
         reviewsByCourse: {},
         error: err.response?.data?.mensaje || 'No se pudo cargar la información del usuario'
       });
@@ -896,19 +977,26 @@ const principal = async (req, res) => {
     success,
     error,
     cursosActivos,
+    cursosCreados,
+    cursosDisponibles,
     reviewsByCourse
   });
 };
 
 const addCursoPersonalizado = async (req, res) => {
-  const { userId, nombre, nombreCurso } = req.body;
+  const { userId, nombre, nombreCurso, cursoId } = req.body;
 
-  if (!userId || !nombreCurso) {
+  if (!userId || (!nombreCurso && !cursoId)) {
     return res.redirect(`/principal?nombre=${encodeURIComponent(nombre || 'Usuario')}&userid=${encodeURIComponent(userId || '')}&error=${encodeURIComponent('Selecciona un curso válido')}`);
   }
 
   try {
-    await axios.post(`${getApiBase(req)}/users/${userId}/cursos`, { nombreCurso });
+    const payload = cursoId
+      ? { cursoId }
+      : { nombreCurso };
+
+    await axios.post(`${getApiBase(req)}/users/${userId}/cursos`, payload);
+
     res.redirect(`/principal?nombre=${encodeURIComponent(nombre || 'Usuario')}&userid=${encodeURIComponent(userId)}&success=${encodeURIComponent('Curso añadido a tu lista personalizada')}`);
   } catch (err) {
     res.redirect(`/principal?nombre=${encodeURIComponent(nombre || 'Usuario')}&userid=${encodeURIComponent(userId)}&error=${encodeURIComponent(err.response?.data?.mensaje || 'No se pudo añadir el curso')}`);
@@ -1061,6 +1149,7 @@ function moduleExercisePaso(req, res) {
     explicacion: currentStep.explicacion || null,
     imagenRuta: currentStep.imagenRuta || null,
     imagenAlt: currentStep.imagenAlt || 'Imagen de apoyo del minijuego',
+    videoUrl: currentStep.videoUrl || '',
     nextHref,
     themeColor: course.color,
     themeAccent: course.accent,
@@ -1083,8 +1172,7 @@ async function moduleExerciseCompletado(req, res) {
   if (userid) {
     try {
       await axios.post(`${getApiBase(req)}/users/${userid}/progreso/${modulo}/${exercise.id}`);
-    } catch (_err) {
-    }
+    } catch (_err) {}
   }
 
   res.render('whatsapp_agregar_contacto_completado', {
@@ -1098,7 +1186,6 @@ async function moduleExerciseCompletado(req, res) {
     themeIcon: course.icono
   });
 }
-
 
 async function fetchDynamicCourse(req, cursoid) {
   const response = await axios.get(`${getApiBase(req)}/cursos/${cursoid}`);
@@ -1151,6 +1238,9 @@ function mapDynamicCourseToViewModel(courseDoc) {
             accion: e.pregunta,
             simulacion: 'Completa el ejercicio correctamente',
             tipo: e.tipo === 'multiple' ? 'tap' : 'input',
+            videoUrl: e.videoUrl || '',
+            imagenRuta: e.imagenUrl || '',
+            imagenAlt: e.titulo || 'Imagen de apoyo',
             juego: e.tipo === 'multiple'
               ? {
                   instruccion: e.pregunta,
@@ -1182,8 +1272,35 @@ const formCrearCurso = (req, res) => {
   res.render('crear_curso', {
     title: 'Crear curso',
     userid,
-    userNombre: nombre
+    userNombre: nombre,
+    curso: null,
+    modoEdicion: false
   });
+};
+
+const formEditarCurso = async (req, res) => {
+  const nombre = req.query.nombre || 'Usuario';
+  const userid = req.query.userid || '';
+  const { cursoid } = req.params;
+
+  if (!userid) {
+    return res.redirect('/?error=Debes iniciar sesión');
+  }
+
+  try {
+    const response = await axios.get(`${getApiBase(req)}/cursos/${cursoid}`);
+    const curso = response.data;
+
+    res.render('crear_curso', {
+      title: 'Editar curso',
+      userid,
+      userNombre: nombre,
+      curso,
+      modoEdicion: true
+    });
+  } catch (_err) {
+    return res.redirect(`/principal?nombre=${encodeURIComponent(nombre)}&userid=${encodeURIComponent(userid)}&error=${encodeURIComponent('No se pudo cargar el curso para editar')}`);
+  }
 };
 
 const crearCursoDinamico = async (req, res) => {
@@ -1238,7 +1355,7 @@ async function dynamicCourseHome(req, res) {
       themeLight: course.light,
       themeIcon: course.icono
     });
-  } catch (err) {
+  } catch (_err) {
     res.redirect(`/principal?${userQuery}&error=${encodeURIComponent('No se pudo abrir el curso dinámico')}`);
   }
 }
@@ -1313,6 +1430,7 @@ async function dynamicCoursePaso(req, res) {
       explicacion: currentStep.explicacion || null,
       imagenRuta: currentStep.imagenRuta || null,
       imagenAlt: currentStep.imagenAlt || 'Imagen de apoyo del minijuego',
+      videoUrl: currentStep.videoUrl || '',
       nextHref,
       themeColor: course.color,
       themeAccent: course.accent,
@@ -1340,8 +1458,7 @@ async function dynamicCourseCompletado(req, res) {
     if (userid) {
       try {
         await axios.post(`${getApiBase(req)}/users/${userid}/progreso/cursos/${cursoid}/${exercise.id}`);
-      } catch (_err) {
-      }
+      } catch (_err) {}
     }
 
     res.render('whatsapp_agregar_contacto_completado', {
@@ -1373,6 +1490,7 @@ module.exports = {
   deleteCursoPersonalizado,
   crearResenaCurso,
   formCrearCurso,
+  formEditarCurso,
   crearCursoDinamico,
   dynamicCourseHome,
   dynamicCourseExercise,

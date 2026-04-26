@@ -17,6 +17,7 @@ block content
 
     .px-3.mt-4.pb-5.lesson-content
       .lesson-content-inner
+
         .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px;")
           .d-flex.align-items-start
             .rounded-circle.d-flex.justify-content-center.align-items-center.me-3.lesson-step-circle(
@@ -30,30 +31,31 @@ block content
                 span.text-muted= instruccion
                 span.fw-bold(style="color:#C0392B;")= accion
 
-        .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style=`border-radius:20px; background:${themeLight || '#eef8ff'}; border:1px solid #dbe7ef;`)
-          h4.h6.fw-bold.mb-3(style=`color:${themeAccent || '#0D6EFD'};`) Imagen de apoyo
-          .text-center
-            if imagenRuta
+        if imagenRuta
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style=`border-radius:20px; background:${themeLight || '#eef8ff'}; border:1px solid #dbe7ef;`)
+            h4.h6.fw-bold.mb-3(style=`color:${themeAccent || '#0D6EFD'};`) Imagen de apoyo
+            .text-center
               img.img-fluid.rounded.shadow-sm.mb-3(
                 src=imagenRuta
-                alt=imagenAlt
+                alt=imagenAlt || 'Imagen de apoyo'
                 style="max-height:260px; object-fit:contain;"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
               )
-              .d-none.flex-column.justify-content-center.align-items-center.rounded.p-4(style="min-height:220px; border:2px dashed #c8d1d8; background:#fff;")
-                i.bi.bi-image(style="font-size:2.2rem; color:#94a3b8;")
-                p.fw-semibold.mt-3.mb-1 Aquí puedes colocar una imagen para este paso.
-                p.text-muted.small.mb-0 Ruta sugerida: #{imagenRuta}
-            else
-              .d-flex.flex-column.justify-content-center.align-items-center.rounded.p-4(style="min-height:220px; border:2px dashed #c8d1d8; background:#fff;")
-                i.bi.bi-image(style="font-size:2.2rem; color:#94a3b8;")
-                p.fw-semibold.mt-3.mb-1 Aquí puedes colocar una imagen para este paso.
-                p.text-muted.small.mb-0 Añade una ruta de imagen en la configuración del minijuego.
 
         if explicacion
           .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px; background:#eef8ff; border:1px solid #cfe8ff;")
             h4.h6.fw-bold.mb-2(style="color:#0D6EFD;")= explicacion.titulo
             p.text-muted.small.m-0= explicacion.texto
+
+        if videoUrl
+          .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px; background:#fff;")
+            h4.h6.fw-bold.mb-3 Video de apoyo
+            .ratio.ratio-16x9
+              iframe(
+                src=videoUrl
+                title="Video explicativo"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              )
 
         if tipo === 'tap' && juego
           .card.border-0.shadow-sm.p-4.mb-3.lesson-card.lesson-game-card(
@@ -79,7 +81,7 @@ block content
               data-retry-button
             ) Intentar de nuevo
 
-        else if tipo === 'input' && juego
+        if tipo === 'input' && juego
           .card.border-0.shadow-sm.p-4.mb-3.lesson-card.lesson-game-card(
             style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;"
             data-minigame="input"
@@ -107,7 +109,7 @@ block content
               data-retry-input
             ) Intentar de nuevo
 
-        else
+        if tipo !== 'tap' && tipo !== 'input'
           .card.border-0.shadow-sm.p-4.mb-3.lesson-card(style="border-radius:20px; background:#fff7dc; border:1px solid #f2e2a5;")
             .text-center
               i.bi.bi-grid-3x3-gap-fill(style="font-size:2.2rem; color:#4b4b4b;")

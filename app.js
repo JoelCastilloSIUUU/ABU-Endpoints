@@ -6,14 +6,13 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-
 const indexRouter = require('./app_server/routes/index');
 const usersRouter = require('./app_server/routes/users');
 const apiRoutes = require('./app_api/routes/index');
 
 const app = express();
 
-app.set('views', path.join(__dirname,'app_server', 'views'));
+app.set('views', path.join(__dirname, 'app_server', 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
@@ -22,9 +21,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// IMPORTANTE: primero API, luego rutas del servidor
 app.use('/api', apiRoutes);
+app.use('/users', usersRouter);
+app.use('/', indexRouter);
 
 app.use(function(req, res, next) {
   next(createError(404));

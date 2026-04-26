@@ -51,6 +51,38 @@ block content
                       h4.fw-bold.mb-2.text-dark(style="font-size: 1.4rem;")= modulo.nombre
                       p.text-muted.m-0(style="font-size: 1.08rem; line-height: 1.5;")= modulo.desc
 
+          if cursosCreados && cursosCreados.length
+            each curso in cursosCreados
+              .col-12.col-lg-6.p-0.mb-3
+                - const hrefCurso = curso.href || `/${curso.slug}?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}`
+                .card.border-0.shadow-sm.module-card(style="border-radius: 20px; position: relative; overflow: hidden;")
+
+                  .position-absolute.top-0.end-0.p-2.d-flex.gap-2(style="z-index: 5;")
+                    a.btn.btn-sm.btn-light.shadow-sm(
+                      href=`/cursos/${curso.cursoId}/editar?nombre=${encodeURIComponent(userNombre || 'Usuario')}&userid=${encodeURIComponent(userid || '')}`,
+                      title="Editar curso",
+                      style="border-radius: 12px;"
+                    )
+                      i.bi.bi-pencil-fill(style="color:#FF8C00;")
+
+                    button.btn.btn-sm.btn-light.shadow-sm(
+                      type="button",
+                      title="Eliminar curso",
+                      style="border-radius: 12px;",
+                      onclick=`eliminarCursoCreado('${curso.cursoId}', '${encodeURIComponent(userNombre || 'Usuario')}', '${encodeURIComponent(userid || '')}')`
+                    )
+                      i.bi.bi-trash-fill.text-danger
+
+                  a.text-decoration-none(href=hrefCurso)
+                    .p-3.d-flex.align-items-center.module-card-body(style="padding-right: 92px !important;")
+                      .rounded-4.d-flex.justify-content-center.align-items-center.me-3.module-icon(
+                        style=`width: 82px; height: 82px; background-color: ${curso.color || '#FF8C00'}; min-width: 82px;`
+                      )
+                        i.bi(class=(curso.icono || 'bi-journal-text'), style="font-size: 2.3rem; color: white;")
+                      .text-start
+                        h4.fw-bold.mb-2.text-dark(style="font-size: 1.4rem;")= curso.nombre
+                        p.text-muted.m-0(style="font-size: 1.08rem; line-height: 1.5;")= curso.desc || 'Curso personalizado creado por ti'
+
         .row.mb-4.mt-4
           .col-12
             .card.border-0.shadow-sm.p-4(style="border-radius: 20px;")
@@ -79,14 +111,32 @@ block content
                   form.mt-3(action="/principal/cursos", method="post")
                     input(type="hidden", name="userId", value=userid)
                     input(type="hidden", name="nombre", value=userNombre)
-                    select.form-select.mb-3(name="nombreCurso", required, style="border-radius: 14px;")
-                      option(value="") Selecciona un módulo para añadir...
-                      option(value="WhatsApp") WhatsApp
-                      option(value="YouTube") YouTube
-                      option(value="Cámara") Cámara
-                      option(value="Navegador") Navegador
-                      option(value="Ajustes") Ajustes
-                      option(value="Llamadas") Llamadas
+                    input#nombreCursoHidden(type="hidden", name="nombreCurso")
+                    input#cursoIdHidden(type="hidden", name="cursoId")
+
+                    select.form-select.mb-3(
+                      name="cursoSelector",
+                      required,
+                      style="border-radius: 14px;",
+                      onchange="const selected=this.options[this.selectedIndex]; document.getElementById('nombreCursoHidden').value=selected.dataset.nombre || ''; document.getElementById('cursoIdHidden').value=selected.dataset.cursoid || '';"
+                    )
+                      option(value="") Selecciona un curso para añadir...
+
+                      if cursosDisponibles && cursosDisponibles.length
+                        each curso in cursosDisponibles
+                          option(
+                            value=curso.tipo === 'dynamic' ? curso.cursoId : curso.nombreCurso,
+                            data-nombre=curso.tipo === 'static' ? curso.nombreCurso : '',
+                            data-cursoid=curso.tipo === 'dynamic' ? curso.cursoId : ''
+                          )= curso.tipo === 'dynamic' ? `${curso.label} (creado por mí)` : curso.label
+                      else
+                        option(value="WhatsApp", data-nombre="WhatsApp", data-cursoid="") WhatsApp
+                        option(value="YouTube", data-nombre="YouTube", data-cursoid="") YouTube
+                        option(value="Cámara", data-nombre="Cámara", data-cursoid="") Cámara
+                        option(value="Navegador", data-nombre="Navegador", data-cursoid="") Navegador
+                        option(value="Ajustes", data-nombre="Ajustes", data-cursoid="") Ajustes
+                        option(value="Llamadas", data-nombre="Llamadas", data-cursoid="") Llamadas
+
                     button.btn.text-white.fw-bold(type="submit", style="background-color: #FF8C00; border-radius: 14px; padding: 14px 20px;") + Añadir a mi lista
 
             .management-right
@@ -95,7 +145,7 @@ block content
               if !userid
                 .alert.alert-warning Debes iniciar sesión para gestionar tus cursos.
               else if cursosActivos.length === 0
-                .alert.alert-light.shadow-sm Aún no tienes cursos personalizados. Añade uno para comenzar.
+                .alert.alert-light.shadow-sm Aún no tienes cursos añadidos manualmente. Añade uno para comenzar.
               else
                 .row.g-2.m-0
                   each item in cursosActivos
@@ -145,3 +195,30 @@ block content
                                     span.badge.text-bg-warning.text-dark(style="font-size: 1rem;") #{review.rating}/5
                                   if review.comment
                                     p.text-muted.mb-0.mt-2(style="font-size: 1.05rem; line-height: 1.5;")= review.comment
+
+block scripts
+  script.
+    async function eliminarCursoCreado(cursoId, nombreEncoded, useridEncoded) {
+      const confirmado = confirm('¿Seguro que quieres eliminar este curso? Esta acción no se puede deshacer.');
+
+      if (!confirmado) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/cursos/${cursoId}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          alert(data.mensaje || 'No se pudo eliminar el curso.');
+          return;
+        }
+
+        window.location.href = `/principal?nombre=${nombreEncoded}&userid=${useridEncoded}&success=${encodeURIComponent('Curso eliminado correctamente')}`;
+      } catch (_err) {
+        alert('Ocurrió un error al eliminar el curso.');
+      }
+    }

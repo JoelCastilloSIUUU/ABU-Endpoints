@@ -29,6 +29,10 @@ router.post('/principal/cursos/:cursoid/resenas', ctrlContenidos.crearResenaCurs
 
 router.get('/cursos/nuevo', ctrlContenidos.formCrearCurso);
 router.post('/cursos/nuevo', ctrlContenidos.crearCursoDinamico);
+
+/* IMPORTANTE: esta ruta debe ir antes de /cursos/:cursoid */
+router.get('/cursos/:cursoid/editar', ctrlContenidos.formEditarCurso);
+
 router.get('/cursos/:cursoid', ctrlContenidos.dynamicCourseHome);
 router.get('/cursos/:cursoid/:exerciseId', ctrlContenidos.dynamicCourseExercise);
 router.get('/cursos/:cursoid/:exerciseId/paso/:n', ctrlContenidos.dynamicCoursePaso);

@@ -17,6 +17,10 @@ const ejercicioSchema = new Schema({
   descripcion: { type: String, default: '' },
   pregunta: { type: String, required: true, trim: true },
   tipo: { type: String, enum: ['multiple', 'text'], required: true },
+
+  videoUrl: { type: String, default: '' },
+  imagenUrl: { type: String, default: '' },
+
   opciones: {
     type: [opcionSchema],
     default: [],
