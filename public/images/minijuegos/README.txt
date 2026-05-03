@@ -1,0 +1,39 @@
+Coloca aquí las imágenes de apoyo para cada paso de los minijuegos.
+
+Rutas sugeridas ya conectadas en el proyecto:
+- whatsapp/abrir-whatsapp.png
+- whatsapp/nuevo-chat.png
+- whatsapp/nuevo-contacto.png
+- whatsapp/abrir-chat.png
+- whatsapp/escribir-mensaje.png
+- whatsapp/boton-enviar.png
+- whatsapp/chat-foto.png
+- whatsapp/clip-adjuntar.png
+- whatsapp/seleccionar-foto.png
+- youtube/icono-youtube.png
+- youtube/abrir-app.png
+- youtube/pantalla-principal.png
+- youtube/lupa-busqueda.png
+- youtube/escribir-busqueda.png
+- youtube/resultados-busqueda.png
+- youtube/abrir-video.png
+- youtube/pausar-video.png
+- youtube/pantalla-completa.png
+- camara/icono-camara.png
+- camara/abrir-app.png
+- camara/boton-disparo.png
+- camara/apuntar-objeto.png
+- camara/sujetar-estable.png
+- camara/tomar-foto.png
+- camara/miniatura-foto.png
+- camara/abrir-foto.png
+- camara/revisar-foto.png
+- llamadas/icono-telefono.png
+- llamadas/abrir-telefono.png
+- llamadas/pantalla-telefono.png
+- llamadas/abrir-teclado.png
+- llamadas/escribir-numero.png
+- llamadas/boton-llamar.png
+- llamadas/pestana-contactos.png
+- llamadas/elegir-contacto.png
+- llamadas/llamar-contacto.png

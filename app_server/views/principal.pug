@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  #principal-react-root(data-nombre=userNombre || 'Usuario', data-userid=userid || '')
+    .container-fluid.p-0(style="background-color: #F8F9FA; min-height: 100vh;")
+      .p-4.text-white(style="background: #FF8C00; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px;")
+        h2.h3.fw-bold.m-0 Cargando principal...
+        p.m-0 Sigamos aprendiendo juntos
+
+block scripts
+  link(rel='stylesheet', href='/principal-react/principal.css')
+  script(type='module', src='/principal-react/principal.js')

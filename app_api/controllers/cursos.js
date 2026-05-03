@@ -1,0 +1,234 @@
+const mongoose = require('mongoose');
+const Curso = mongoose.model('Curso');
+const Usuario = mongoose.model('Usuario');
+
+const slugify = (text = '') =>
+  text.toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+const normalizar = (txt = '') =>
+  txt.toString().trim().toLowerCase();
+
+const cursosListar = async (req, res) => {
+  try {
+    const filtro = {};
+
+    if (req.query.origen) {
+      filtro.origen = req.query.origen;
+    }
+
+    if (req.query.creador) {
+      if (!mongoose.Types.ObjectId.isValid(req.query.creador)) {
+        return res.status(400).json({ mensaje: 'El parámetro creador no es un ObjectId válido' });
+      }
+
+      filtro.creador = new mongoose.Types.ObjectId(req.query.creador);
+    }
+
+    const cursos = await Curso.find(filtro)
+      .select('nombre descripcion icono color_hex imagenUrl slug creador origen ejercicios publicado createdAt updatedAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.status(200).json(cursos);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al listar cursos', error: err.message });
+  }
+};
+
+const cursosCrear = async (req, res) => {
+  try {
+    const { userId, nombre, descripcion, icono, color_hex, imagenUrl, ejercicios } = req.body;
+
+    if (!userId || !nombre || !Array.isArray(ejercicios) || !ejercicios.length) {
+      return res.status(400).json({ mensaje: 'Faltan datos obligatorios del curso' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ mensaje: 'El userId no es válido' });
+    }
+
+    const usuario = await Usuario.findById(userId).lean();
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    const slugBase = slugify(nombre);
+    let slugFinal = slugBase;
+    let contador = 1;
+
+    while (await Curso.exists({ slug: slugFinal })) {
+      slugFinal = `${slugBase}-${contador}`;
+      contador += 1;
+    }
+
+    const curso = await Curso.create({
+      nombre,
+      descripcion,
+      icono: icono || 'bi-bookmark-fill',
+      color_hex: color_hex || '#FF8C00',
+      imagenUrl: imagenUrl || '',
+      slug: slugFinal,
+      origen: 'dynamic',
+      creador: new mongoose.Types.ObjectId(userId),
+      ejercicios: ejercicios.map((e, i) => ({
+        titulo: e.titulo || `Ejercicio ${i + 1}`,
+        descripcion: e.descripcion || '',
+        pregunta: e.pregunta,
+        tipo: e.tipo,
+        videoUrl: e.videoUrl || '',
+        imagenUrl: e.imagenUrl || '',
+        opciones: e.tipo === 'multiple'
+          ? (e.opciones || []).map(texto => ({ texto }))
+          : [],
+        respuestaCorrecta: e.respuestaCorrecta,
+        orden: i + 1
+      }))
+    });
+
+    res.status(201).json(curso);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al crear curso', error: err.message });
+  }
+};
+
+const cursosLeerUno = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.cursoid)) {
+      return res.status(400).json({ mensaje: 'ID de curso no válido' });
+    }
+
+    const curso = await Curso.findById(req.params.cursoid).lean();
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    res.status(200).json(curso);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al leer curso', error: err.message });
+  }
+};
+
+const cursosActualizar = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.cursoid)) {
+      return res.status(400).json({ mensaje: 'ID de curso no válido' });
+    }
+
+    const curso = await Curso.findById(req.params.cursoid);
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    const nombreAnterior = curso.nombre;
+
+    curso.nombre = req.body.nombre ?? curso.nombre;
+    curso.descripcion = req.body.descripcion ?? curso.descripcion;
+    curso.icono = req.body.icono ?? curso.icono;
+    curso.color_hex = req.body.color_hex ?? curso.color_hex;
+    curso.imagenUrl = req.body.imagenUrl ?? curso.imagenUrl;
+    curso.publicado = req.body.publicado ?? curso.publicado;
+
+    if (req.body.nombre && req.body.nombre !== nombreAnterior) {
+      const slugBase = slugify(req.body.nombre);
+      let slugFinal = slugBase;
+      let contador = 1;
+
+      while (await Curso.exists({ slug: slugFinal, _id: { $ne: curso._id } })) {
+        slugFinal = `${slugBase}-${contador}`;
+        contador += 1;
+      }
+
+      curso.slug = slugFinal;
+    }
+
+    if (Array.isArray(req.body.ejercicios)) {
+      curso.ejercicios = req.body.ejercicios.map((e, i) => ({
+        titulo: e.titulo || `Ejercicio ${i + 1}`,
+        descripcion: e.descripcion || '',
+        pregunta: e.pregunta,
+        tipo: e.tipo,
+        videoUrl: e.videoUrl || '',
+        imagenUrl: e.imagenUrl || '',
+        opciones: e.tipo === 'multiple'
+          ? (e.opciones || []).map(texto => ({ texto }))
+          : [],
+        respuestaCorrecta: e.respuestaCorrecta,
+        orden: i + 1
+      }));
+    }
+
+    await curso.save();
+
+    res.status(200).json(curso);
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al actualizar curso', error: err.message });
+  }
+};
+
+const cursosBorrar = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.cursoid)) {
+      return res.status(400).json({ mensaje: 'ID de curso no válido' });
+    }
+
+    const curso = await Curso.findByIdAndDelete(req.params.cursoid);
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    await Usuario.updateMany(
+      {},
+      { $pull: { cursosEnrolados: { cursoId: curso._id } } }
+    );
+
+    res.status(200).json({ mensaje: 'Curso eliminado correctamente' });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al eliminar curso', error: err.message });
+  }
+};
+
+const validarRespuesta = async (req, res) => {
+  try {
+    const { respuesta } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.cursoid)) {
+      return res.status(400).json({ mensaje: 'ID de curso no válido' });
+    }
+
+    const curso = await Curso.findById(req.params.cursoid).lean();
+
+    if (!curso) {
+      return res.status(404).json({ mensaje: 'Curso no encontrado' });
+    }
+
+    const ejercicio = curso.ejercicios.find(
+      (e) => String(e._id) === String(req.params.ejercicioid)
+    );
+
+    if (!ejercicio) {
+      return res.status(404).json({ mensaje: 'Ejercicio no encontrado' });
+    }
+
+    const correcta = normalizar(respuesta) === normalizar(ejercicio.respuestaCorrecta);
+
+    res.status(200).json({ correcta });
+  } catch (err) {
+    res.status(500).json({ mensaje: 'Error al validar respuesta', error: err.message });
+  }
+};
+
+module.exports = {
+  cursosListar,
+  cursosCrear,
+  cursosLeerUno,
+  cursosActualizar,
+  cursosBorrar,
+  validarRespuesta
+};

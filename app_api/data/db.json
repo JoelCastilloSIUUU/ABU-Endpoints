@@ -1,0 +1,57 @@
+{
+  "reviews": {
+    "69c6e334f8410fe686368fc0": [
+      {
+        "id": "26dd3ac0-584e-4328-b164-d16886444838",
+        "userId": "69c6e318f8410fe686368fb9",
+        "userName": "Matias",
+        "rating": 5,
+        "comment": "Me gusta mucho el curso",
+        "createdAt": "2026-03-28T17:54:32.561Z",
+        "updatedAt": "2026-03-28T17:54:32.561Z"
+      },
+      {
+        "id": "3743fcd4-9441-4bd2-85cb-000e3ca4bce3",
+        "userId": "69ea850480be6484e6332a66",
+        "userName": "Joel",
+        "rating": 1,
+        "comment": "f",
+        "createdAt": "2026-05-03T15:37:02.339Z",
+        "updatedAt": "2026-05-03T15:37:02.339Z"
+      }
+    ],
+    "69e6aee135a18c9fe85f6c08": [
+      {
+        "id": "ff69c1da-b87e-4eae-b6ba-ad1acdec94fc",
+        "userId": "69e6ab82ad9cc7ae6be66942",
+        "userName": "Joel",
+        "rating": 5,
+        "comment": "Elrubius >>> Rakaai",
+        "createdAt": "2026-04-20T22:56:08.558Z",
+        "updatedAt": "2026-04-20T22:56:08.558Z"
+      }
+    ],
+    "69e8c3207eec32b5a257f83d": [
+      {
+        "id": "d1b51075-10d6-43cd-be72-447b29443db7",
+        "userId": "69e6ab82ad9cc7ae6be66942",
+        "userName": "Joel",
+        "rating": 3,
+        "comment": "siu",
+        "createdAt": "2026-04-22T12:47:01.684Z",
+        "updatedAt": "2026-04-22T12:47:01.684Z"
+      }
+    ],
+    "69eaaf8580c3aeae970548b7": [
+      {
+        "id": "7ad29804-1be6-4040-a936-72c35778d0ae",
+        "userId": "69ea850480be6484e6332a66",
+        "userName": "Joel",
+        "rating": 5,
+        "comment": "b",
+        "createdAt": "2026-04-23T23:59:27.814Z",
+        "updatedAt": "2026-04-23T23:59:27.814Z"
+      }
+    ]
+  }
+}

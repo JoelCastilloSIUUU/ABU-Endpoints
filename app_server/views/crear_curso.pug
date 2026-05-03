@@ -1,0 +1,85 @@
+extends layout
+
+block content
+  .container.py-5
+    .row.justify-content-center
+      .col-lg-9
+        .card.border-0.shadow-sm.p-4(style="border-radius:20px;")
+          h2.fw-bold.mb-4= modoEdicion ? 'Editar curso' : 'Crear curso nuevo'
+
+          form#cursoForm
+            input(type="hidden", id="userId", value=userid)
+            input(type="hidden", id="userNombre", value=userNombre)
+
+            .mb-3
+              label.form-label Nombre del curso
+              input.form-control(type="text", id="nombreCurso", required)
+
+            .mb-3
+              label.form-label Descripción
+              textarea.form-control(id="descripcionCurso", rows="3")
+
+            .mb-3
+              label.form-label Imagen principal del curso
+              input.form-control(type="file", id="imagenCursoFile", accept="image/*")
+              input(type="hidden", id="imagenCursoUrl")
+              small.text-muted Sube una imagen de apoyo o portada para este curso. Si no subes una imagen, la tarjeta mostrará un mensaje indicando que falta agregar la imagen.
+              .mt-3
+                img#previewImagenCurso(src="", alt="Vista previa de la imagen del curso", style="display:none; width:100%; max-height:220px; object-fit:cover; border-radius:16px;")
+
+            .row
+              .col-md-6.mb-3
+                label.form-label Color
+                input.form-control.form-control-color(type="color", id="colorCurso", value="#FF8C00")
+
+              .col-md-6.mb-3
+                input(type="hidden", id="iconoCurso", value="bi-bookmark-fill")
+                label.form-label Ícono del curso
+
+                .d-flex.flex-wrap.gap-2
+                  button.btn.btn-warning.text-white.border-warning.icon-option(type="button", data-icon="bi-bookmark-fill")
+                    i.bi.bi-bookmark-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-chat-left-text-fill")
+                    i.bi.bi-chat-left-text-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-play-btn-fill")
+                    i.bi.bi-play-btn-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-camera-fill")
+                    i.bi.bi-camera-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-globe")
+                    i.bi.bi-globe
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-gear-fill")
+                    i.bi.bi-gear-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-telephone-fill")
+                    i.bi.bi-telephone-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-laptop")
+                    i.bi.bi-laptop
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-phone-fill")
+                    i.bi.bi-phone-fill
+
+                  button.btn.btn-light.icon-option(type="button", data-icon="bi-envelope-fill")
+                    i.bi.bi-envelope-fill
+
+                small.text-muted.d-block.mt-2 El ícono seleccionado aparecerá en la tarjeta del curso dentro de Principal.
+
+            hr
+            h4.fw-bold.mt-4 Ejercicios
+            #ejerciciosContainer
+
+            .d-flex.gap-2.mt-3.flex-wrap
+              button.btn.btn-outline-secondary(type="button", id="addEjercicioBtn") + Agregar ejercicio
+              button.btn.btn-warning.text-white(type="submit")= modoEdicion ? 'Guardar cambios' : 'Guardar curso'
+              a.btn.btn-light(href=`/principal?nombre=${encodeURIComponent(userNombre)}&userid=${encodeURIComponent(userid)}`) Volver
+
+block scripts
+  script.
+    window.CURSO_INITIAL_DATA = !{JSON.stringify(curso || null)};
+    window.CURSO_MODO_EDICION = !{JSON.stringify(modoEdicion || false)};
+  script(src="/javascripts/crear-curso.js")
